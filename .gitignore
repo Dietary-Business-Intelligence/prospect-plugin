@@ -1,0 +1,5 @@
+config.dev.js
+config.prod.js
+config.test.js
+plugin.html
+.DS_Store
