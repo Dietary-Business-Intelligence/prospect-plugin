@@ -282,13 +282,48 @@ function removeQueryParamAndReload() {
     }
 }
 
+function extractPrimaryDomain(input) {
+    input = input.trim();
+    input = input.replace(/^\s*\d+\s+/, '').replace(/\s+\d+\s*$/, '');
+    if (input.startsWith('http://') || input.startsWith('https://')) {
+        try {
+            const urlObject = new URL(input);
+            const host = urlObject.hostname;
+            if (!host) {
+                return null;
+            }
+            return host.startsWith('www.') ? host.substring(4) : host;
+        } catch (error) {
+            return null;
+        }
+    } else if (input.startsWith('www.')) {
+        try {
+            const urlObject = new URL('http://' + input);
+            const host = urlObject.hostname;
+            return host.startsWith('www.') ? host.substring(4) : host;
+        } catch (error) {
+            return null;
+        }
+    }else {
+        const match = input.match(/^(?:www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,}\.[a-zA-Z]{2,})|([a-zA-Z0-9-]+(\.[a-zA-Z]{2,}))(\/.*)?)$/);
+        if (match) {
+            const domain = match[1] || match[2];
+            return domain;
+        }
+        const cleanedInput = input.replace(/[^a-zA-Z0-9-\s\/.]/g, '');
+        return cleanedInput.trim();
+    }
+}
+
 function headSearch(event) {
     if (event.key == 'Enter') {
         if ($(customElement.shadowRoot.querySelector('#top_search')).val() != '') {
             current_page = 1
-            
+           
             $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
-            filter_data = 'wildcard[]=' + $(customElement.shadowRoot.querySelector('#top_search')).val() + '&'
+            var getExtractData = extractPrimaryDomain($(customElement.shadowRoot.querySelector('#top_search')).val());
+            console.log('getExtractData',getExtractData)
+            filter_data = 'wildcard[]=' + getExtractData + '&'
             if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
                 getPeople(selectedDomains);
             } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
@@ -1077,11 +1112,14 @@ function retrieveDataLinkedinUrl() {
 // Update checkboxes from localStorage when the page loads
 window.addEventListener('load', retrieveDataPrimaryDomain);
 function handleCheckboxChange() {
+    // console.log(234324243234)
     saveDataPrimaryDomain();
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
+    console.log(checkboxes)
 
     // Check if every checkbox in the NodeList is checked
     var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
+    console.log(allChecked)
 
     // Get the 'checkAllCompany' checkbox
     var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
@@ -1844,7 +1882,10 @@ function getPeople(selectedDomains) {
         $(document).ajaxComplete(function() {
             // Assuming you already have an event listener for the Check All checkbox
             const checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
+            // checkAllCheckbox.addEventListener('change', handleCheckboxChange.bind(this));
             checkAllCheckbox.addEventListener('change', function () {
+                console.log(332423432)
+                // handleCheckboxChange.bind(this)
                 // Check or uncheck all company checkboxes based on the Check All checkbox state
                 $(customElement.shadowRoot.querySelectorAll('.company_checkbox')).prop('checked', $(this).prop('checked'));
                 checkboxes.forEach(checkbox => {
@@ -1868,6 +1909,7 @@ function getPeople(selectedDomains) {
                 } else{
                     $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', true)
                 }
+                handleCheckboxChange()
             });
 
             // Add your existing event listener for individual company checkboxes here, if needed
@@ -1911,13 +1953,12 @@ function getPeople(selectedDomains) {
     function assign_companies() {
         let dataOrganizationStrings = JSON.parse(localStorage.getItem('dataOrganization'));
         let dataOrganizations = [];
-    
+        
         if (dataOrganizationStrings && Array.isArray(dataOrganizationStrings)) {
             dataOrganizationStrings.forEach(itemString => {
-    
-                // Replacing all single quotes with double quotes
                 let modifiedItemString = itemString.replace(/'/g, '"');
-    
+                console.log('modifiedItemString', modifiedItemString)
+        
                 try {
                     let itemObject = JSON.parse(modifiedItemString);
                     dataOrganizations.push(itemObject);
