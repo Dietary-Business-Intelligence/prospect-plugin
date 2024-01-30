@@ -157,10 +157,10 @@ $(document).ready(function() {
         if(window.globalConfig.source == 'customer_linking'){
             $.ajax({
                 type: "GET",
-                url: 'https://api.zylererp.com/api/sales/get_sales_rep',
+                url: window.envConfig.zyler_base_url+'/api/sales/get_sales_rep',
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjo0MywicGhwc2VydmVyIjoiZ3JlZW5qZWV2YS56eWxlcmVycC5jb20iLCJpYXQiOjE3MDQ3ODgwMjV9.FKaT3Ku1Y4hSCnYHZaqRFhI9LxvJvKBO9tLWtPqbvu0'  // or any other MIME type you want to set
+                    "Authorization": window.envConfig.zyler_bearer_token  // or any other MIME type you want to set
                 }
             }).done(function (response) {
                 let optionsHTML = '<option value="" selected>Select an option</option>';
@@ -1951,6 +1951,7 @@ function getPeople(selectedDomains) {
     });
 
     function assign_companies() {
+     
         let dataOrganizationStrings = JSON.parse(localStorage.getItem('dataOrganization'));
         let dataOrganizations = [];
         
@@ -1967,26 +1968,35 @@ function getPeople(selectedDomains) {
                 }
             });
         }
-    
+        
         var settings = {
-            "url": "https://api.zylererp.com/api/entity/user/client_staff_linking",
+            "url": window.envConfig.zyler_base_url+"/api/entity/user/client_staff_linking",
             "method": "POST",
             "timeout": 0,
             "headers": {
                     "Content-Type": "application/json",
-                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjoxMzIsInBocHNlcnZlciI6ImdyZWVuamVldmEuenlsZXJlcnAuY29tIiwiaWF0IjoxNzA1NjYzNjgwfQ.NhgjmgSxXh0YzctxGplf6gONpVB9JtlCd4vVMFdIQFY"
+                    "Authorization":  window.envConfig.zyler_bearer_token
             },
             "data": JSON.stringify({
               "data": dataOrganizations,
               "staffid": $(customElement.shadowRoot.querySelector('#staff_select')).val()
             }),
+            beforeSend: function() {
+                // This function will be called before the request is sent.
+                // You can use it to show a loader.
+                $(customElement.shadowRoot.querySelector("#assign_companies")).prop("disabled", true).html('Loading...');
+            },
+           
     };
     
     $.ajax(settings).done(function (response) {
+       
         $(customElement.shadowRoot.querySelector("#success-alert")).html('<strong>Prospect Assigned Successfully</strong> ');
             $(customElement.shadowRoot.querySelector("#success-alert")).fadeIn();
             setTimeout(function () {
+               
                 $(customElement.shadowRoot.querySelector("#success-alert")).fadeOut();
+                
                 location.reload()
             }, 3000);
     });
