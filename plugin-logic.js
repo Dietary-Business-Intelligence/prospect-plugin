@@ -170,6 +170,7 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelectorAll('.staff_select')).each(function() {
                     $(this).html(optionsHTML);
                 });                
+                $(customElement.shadowRoot.querySelectorAll('.staff_select')).select2();
             })
         }
 

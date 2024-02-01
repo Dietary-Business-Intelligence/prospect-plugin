@@ -867,9 +867,9 @@ this.shadowRoot.appendChild(styleEl);
                 (window.globalConfig.source == 'customer_linking' ? `
                 <div class="wildcard-search d-flex justify-content-between" style="width:50%" id="search-nav">
                     <div class="search-box">
-                        <div class="d-flex">
-                        <select id="staff_select" name="staff_select[]"  style="width:90%; max-width: 90%;" class="staff_select form-control me-3 form-select" data-placeholder="Choose "></select>
-                        <button type="button" class="btn btn-primary" id="assign_companies" onclick="assign_companies()" disabled>Assign</button>
+                        <div class="d-flex  Select_staff_assign">
+                            <select id="staff_select" name="staff_select[]"  style="width:90%; max-width: 90%;" class="staff_select form-control me-3 form-select" data-placeholder="Select Staff "></select>
+                            <button type="button" class="btn btn-primary" id="assign_companies" onclick="assign_companies()" disabled>Assign</button>
                         </div>
                     </div>
                 </div>` : ``)+`

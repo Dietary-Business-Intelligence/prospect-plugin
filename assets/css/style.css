@@ -6243,3 +6243,24 @@ clip: auto;
   background-color: #a1a1a1;
 }
 
+.Select_staff_assign .select2-container--default .select2-selection--single {
+  background-color: #fff;
+  border: 2px solid #69a9ff;
+  border-radius: 4px;
+  padding: 4px 0;
+  height: auto !important;
+  margin-right: 15px;
+  text-align: left;
+}
+.Select_staff_assign .select2-container--default .select2-selection--single .select2-selection__placeholder {
+  color: #707070;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+}
+.Select_staff_assign .select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 0;
+  position: absolute;
+  top: 19px;
+  right: 21px;
+  width: 20px;
+}

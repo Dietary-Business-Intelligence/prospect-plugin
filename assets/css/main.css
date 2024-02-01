@@ -161,8 +161,14 @@ div.dataTables_wrapper div.dataTables_length select {
     font-size: 28px;
     color: var(--light);
 }
-#search-nav .search-box .form-control{
+#search-nav .search-box .form-control {
     border: 2px solid #69a9ff;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    padding: 9px 8px;
+}
+#search-nav .search-box input#top_search::placeholder {
+    color: #707070;
 }
 
 
