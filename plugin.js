@@ -107,13 +107,20 @@ this.shadowRoot.appendChild(styleEl);
                     select2StyleEl.textContent = select2CSS;
                     this.shadowRoot.appendChild(select2StyleEl);
                 }
-
+                
                 if (!isStyleLoaded('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css')) {
                     const bxCSS = await fetchCSS("https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css");
                     const bxStyleEl = document.createElement('style');
                     bxStyleEl.textContent = bxCSS;
                     this.shadowRoot.appendChild(bxStyleEl);
                 }
+
+                // if (!isStyleLoaded('https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css')) {
+                //     const bxCSS = await fetchCSS("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css");
+                //     const bxStyleEl = document.createElement('style');
+                //     bxStyleEl.textContent = bxCSS;
+                //     this.shadowRoot.appendChild(bxStyleEl);
+                // }
                         // Conditionally load main.css
                 if (!isStyleLoaded(window.envConfig.base_url + 'assets/css/main.css')) {
                     const localMainCssLink = document.createElement('link');
@@ -178,6 +185,10 @@ this.shadowRoot.appendChild(styleEl);
 
                 if (!isScriptLoaded("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js")) {
                     await loadScript("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js");
+                }
+
+                if (!isScriptLoaded("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js")) {
+                    await loadScript("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js");
                 }
 
                 if (!isScriptLoaded(window.envConfig.base_url + "plugin-logic.js")) {
