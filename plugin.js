@@ -808,7 +808,7 @@ this.shadowRoot.appendChild(styleEl);
                  <div id="collapse28" class="accordion-collapse collapse" aria-labelledby="heading28"  >
                      <div class="accordion-body">
                          <div class="filter-select-custom">
-                             <select id="assigned_staff_select_suggest_list" name="assigned_staff_select[]" class="form-control form-select staff_select assigned_staff_select_suggest companies-filter" data-placeholder="Choose "></select>
+                             <select id="assigned_staff_select_suggest_list" name="assigned_staff_select[]" class="form-control form-select staff_select assigned_staff_select_suggest companies-filter" data-placeholder="Select Staff "></select>
                          </div>
                      </div>
                  </div>
