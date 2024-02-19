@@ -800,11 +800,11 @@ function getCompanies() {
 
             const org = data.organization;
             table += '<tr class="accordion-header collapsed  accordion-item" id="flush-headingOne' + key + '" >\n' +
-              '<td>' + (org.assigned_to_me == 1 ?
+              '<td>' + 
           '<div class="form-group form-check">'+
-          (window.globalConfig.source == 'customer_linking' ? data.organization.account_owner == '' ? '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">' : '' : '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">')
+          (window.globalConfig.source == 'customer_linking' ? (data.organization.account_owner == '' ? '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">' : '') : (org.assigned_to_me == 1 ? '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">' : ''))
           +
-          '</div>': '')+'</td>\n'+
+          '</div>'+'</td>\n'+
                 '                        <td class="person-details d-flex align-items-center">\n'+
                 '                            <div class="profile-image">\n' +
                 '                                <a href="#">\n' +
@@ -1952,7 +1952,7 @@ function getPeople(selectedDomains) {
     });
 
     function assign_companies() {
-     
+        console.log('assign companiessss')
         let dataOrganizationStrings = JSON.parse(localStorage.getItem('dataOrganization'));
         let dataOrganizations = [];
         
@@ -1969,38 +1969,107 @@ function getPeople(selectedDomains) {
                 }
             });
         }
-        
-        var settings = {
-            "url": window.envConfig.zyler_base_url+"/api/entity/user/client_staff_linking",
-            "method": "POST",
-            "timeout": 0,
-            "headers": {
-                    "Content-Type": "application/json",
-                    "Authorization":  window.envConfig.zyler_bearer_token
-            },
-            "data": JSON.stringify({
-              "data": dataOrganizations,
-              "staffid": $(customElement.shadowRoot.querySelector('#staff_select')).val()
-            }),
-            beforeSend: function() {
-                // This function will be called before the request is sent.
-                // You can use it to show a loader.
-                $(customElement.shadowRoot.querySelector("#assign_companies")).prop("disabled", true).html('Loading...');
-            },
-           
-    };
-    
-    $.ajax(settings).done(function (response) {
-       
+        $(customElement.shadowRoot.querySelector("#assign_companies")).prop("disabled", true).html('Loading...');
+        let statuses = []
+        console.log(dataOrganizations)
+        for (dataOrganization of dataOrganizations){
+            console.log(dataOrganization)
+            console.log(dataOrganization.name)
+            var settings = {
+                "url": window.envConfig.zyler_base_url+"/api/entity/user/add_new_clients",
+                "method": "POST",
+                "timeout": 0,
+                "headers": {
+                        "Content-Type": "application/json",
+                        "Authorization":  window.envConfig.zyler_bearer_token
+                },
+                "data": JSON.stringify({
+                        "staff_id": 0,
+                        "company_name": dataOrganization.name,
+                        "company_website": dataOrganization.website_url,
+                        "company_email": null,
+                        "company_phone": dataOrganization.phone,
+                        "company_country": dataOrganization.country,
+                        "company_state": dataOrganization?.state,
+                        "company_city": dataOrganization.city,
+                        "company_zip": dataOrganization.postal_code,
+                        "company_industry": [dataOrganization.industry]
+                }) 
+            };
+            $.ajax(settings).done(function (response) {
+                console.log(response)
+                if(response.status == "Added"){
+                    approval_field_name = window.envConfig.zyler_tenant + "_approval"
+                    var settings = {
+                        "url": window.envConfig.sales_automation_api_url+"/assign_unassign_staff_from_company",
+                        "method": "POST",
+                        "timeout": 0,
+                        "headers": {
+                                "Content-Type": "application/json",
+                                "x-api-key":  window.envConfig.api_key
+                        },
+                        "data": JSON.stringify({
+                            "primary_domain": dataOrganization.primary_domain,
+                            [approval_field_name]: "approved"
+                        }) 
+                    };
+                    $.ajax(settings).done(function (response) {
+                        console.log(response)
+                    });
+                }
+
+                let staff_id = $(customElement.shadowRoot.querySelector('#staff_select')).val()
+
+                if(staff_id){
+                    var assign_company_to_staff_settings = {
+                        "url": window.envConfig.zyler_base_url+"/api/entity/user/assign_company_to_staff",
+                        "method": "POST",
+                        "timeout": 0,
+                        "headers": {
+                                "Content-Type": "application/json",
+                                "Authorization":  window.envConfig.zyler_bearer_token
+                        },
+                        "data": JSON.stringify({
+                            "staff_id": staff_id,
+                            "primary_domain": dataOrganization.primary_domain
+                        })
+                    };
+                    $.ajax(assign_company_to_staff_settings).done(function (response) {
+                        console.log(response)
+                        if(response.status == 'Added'){
+                            tenant_staffids_field_name = window.envConfig.zyler_tenant + "_staff_ids"
+                            tenant_status_field_name = window.envConfig.zyler_tenant + "_status"
+                            var settings = {
+                                "url": window.envConfig.sales_automation_api_url+"/assign_unassign_staff_from_company",
+                                "method": "POST",
+                                "timeout": 0,
+                                "headers": {
+                                        "Content-Type": "application/json",
+                                        "x-api-key":  window.envConfig.api_key
+                                },
+                                "data": JSON.stringify({
+                                    "primary_domain": dataOrganization.primary_domain,
+                                    [tenant_staffids_field_name]: [parseInt(staff_id)],
+                                    [tenant_status_field_name]: 'assigned'
+                                }) 
+                            };
+                            console.log('settings', settings)
+                            $.ajax(settings).done(function (response) {
+                                console.log('response',response)
+                            });
+                        }
+                    });
+                }
+
+                console.log(response)
+            });
+        }
         $(customElement.shadowRoot.querySelector("#success-alert")).html('<strong>Prospect Assigned Successfully</strong> ');
-            $(customElement.shadowRoot.querySelector("#success-alert")).fadeIn();
-            setTimeout(function () {
-               
-                $(customElement.shadowRoot.querySelector("#success-alert")).fadeOut();
-                
-                location.reload()
-            }, 3000);
-    });
+        $(customElement.shadowRoot.querySelector("#success-alert")).fadeIn();
+        setTimeout(function () {
+           $(customElement.shadowRoot.querySelector("#success-alert")).fadeOut();
+            location.reload()
+        }, 3000);
     }
     
 
