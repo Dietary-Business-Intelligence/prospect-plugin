@@ -11,6 +11,23 @@ let dataLinkedinUrl = [];
 let go_to_review = false
 
 $(document).ready(function() {
+    
+    if(localStorage.getItem('dataPrimaryDomain')){
+        $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
+      
+    }else{
+        $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(0);
+    }
+    if(localStorage.getItem('dataLinkedinUrl')){
+        $(customElement.shadowRoot.querySelector('#selected_people_total')).text(JSON.parse(localStorage.getItem('dataLinkedinUrl')).length);
+      
+    }else{
+        $(customElement.shadowRoot.querySelector('#selected_people_total')).text(0);
+    }
+
+    
+
+    
 
     $(customElement.shadowRoot.querySelectorAll('.select2-show-search')).each(function() {
         var selectElement = $(this);  // Get a jQuery object for the select element
@@ -65,6 +82,7 @@ $(document).ready(function() {
         function setupPaginationListener(selector) {
             $(customElement.shadowRoot.querySelector(selector)).on('change', function () {
                 current_page = parseInt($(customElement.shadowRoot.querySelector(selector)).val());
+              
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
                     getPeople(selectedDomains);
                     // showPagination(1)
@@ -190,6 +208,7 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelector('#find-btn')).removeClass('d-none')
                 $(customElement.shadowRoot.querySelector('#find-btn')).addClass('active')
                 $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', false)
+                getCompanies();
             } else if($(customElement.shadowRoot.querySelector('#review_prospects_content')).hasClass('active')) {
                 $(customElement.shadowRoot.querySelector('#people_count')).removeClass('d-none')
                 $(customElement.shadowRoot.querySelector('#review_count')).addClass('d-none')
@@ -200,11 +219,7 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelector('#add-to-lead-btn')).addClass('d-none')
                 $(customElement.shadowRoot.querySelector('#find_people_content')).addClass('active')
                 $(customElement.shadowRoot.querySelector('#review_prospects_content')).removeClass('active')
-                // $(customElement.shadowRoot.querySelector('#review-prospects-btn')).addClass('active')
-                // $(customElement.shadowRoot.querySelector('#review-prospects-btn')).prop('disabled', false)
-                // filter_data = ''
-                // selectedItems = []
-                // getPeople(selectedDomains);
+                getPeople(selectedDomains);
             } else {
                 getCompanies();
             }
@@ -318,7 +333,8 @@ function extractPrimaryDomain(input) {
 
 function headSearch(event) {
     if (event.key == 'Enter') {
-        console.log('enter')
+        
+        $(customElement.shadowRoot.querySelector('#checkAllCompany')).checked = false;
         // if ($(customElement.shadowRoot.querySelector('#top_search')).val() != '') {
             current_page = 1
            
@@ -333,9 +349,9 @@ function headSearch(event) {
             } else {
                 getCompanies();
             }
-        // }
+        }
     }
-}
+
 setTimeout(() => {
     $(customElement.shadowRoot.querySelectorAll('.companies-name-filter')).on('click', function (e) {
         current_page = 1
@@ -592,6 +608,7 @@ setTimeout(() => {
 }, 1000)
 
 function generatePagination(total_pages) {
+
     let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
     let total_entries;
 
@@ -728,8 +745,24 @@ function sanitizeCompanyName(companyName) {
     }
 }
 
+// For Linking Filter
+function linkFilter(fieldName,data,fieldId,collapseId) {
+    var selectElement = $(customElement.shadowRoot.querySelector('#'+fieldId));
+    var existingOption = $(selectElement).find('option[value="' + data + '"]');
+    console.log(existingOption)
+    if (existingOption.length) {
+        existingOption.remove();
+    } else {
+        var option = new Option(data, data, true, true);
+        selectElement.append(option);
+    }
+    selectElement.trigger('change');
+    $(customElement.shadowRoot.querySelector('#'+collapseId)).collapse('show');
+}
+
 
 function getCompanies() {
+   
     let total_entries;
     let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
     for (let selector of entries_selector) {
@@ -777,6 +810,7 @@ function getCompanies() {
     }).done(function (response) {
         if (response.fetched_count == 0){
             var nodatafound = 'No results found';
+           
         }
         let table = '';
         var itr=0;
@@ -838,7 +872,7 @@ function getCompanies() {
                 '                            </div>\n' +
                 '                        </td>\n' +
                 '                        <td>\n' +
-                '                            <span data-bs-toggle="tooltip" title="' + data.organization.industry + '">' + (data.organization.industry == null ? "N/A" : data.organization.industry) + '</span>\n' +
+                '                            <a data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.industry+'\', \'industry_suggest_list\', \'collapse5\')" title="' + data.organization.industry + '">' + (data.organization.industry == null ? "N/A" : data.organization.industry) + '</a>\n' +
                 '                        </td>\n' +
                 '                        <td>\n' +
                 '                            <span data-bs-toggle="tooltip" title="' + data.organization.merged_keywords + '">' + data.organization.merged_keywords + '</span>\n' +
@@ -859,7 +893,7 @@ function getCompanies() {
                 '                        </td>\n' +
                 (window.globalConfig.source == 'customer_linking' ? '                        <td class="account_owner">\n' +
                 '                            <span>' + data.organization.account_owner + '</span>\n' +
-                '                        </td>\n' : '')
+                '                        </td>\n' : '')+
                 '                        <td class="lastupdated">\n' +
                 '                            <div class="metric-value">' + data.organization.last_update + '</div>\n' +
                 '                        </td>\n' +
@@ -948,6 +982,9 @@ function saveDataPrimaryDomain() {
     let dataPrimaryDomain = JSON.parse(localStorage.getItem('dataPrimaryDomain')) || [];
     let dataOrganization = JSON.parse(localStorage.getItem('dataOrganization')) || [];
 
+
+
+   
     checkboxes.forEach(checkbox => {
         const dataPrimaryDomainValue = checkbox.getAttribute('data-primary-domain');
         if (checkbox.checked && !dataPrimaryDomain.includes(dataPrimaryDomainValue)) {
@@ -977,6 +1014,9 @@ function saveDataPrimaryDomain() {
     // Save the data to localStorage
     localStorage.setItem('dataPrimaryDomain', JSON.stringify(dataPrimaryDomain));
     localStorage.setItem('dataOrganization', JSON.stringify(dataOrganization));
+
+   
+    $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
 }
 
 
@@ -989,7 +1029,7 @@ function saveDataLinkedinUrl() {
         const dataLinkedinUrlValue = checkbox.getAttribute('data-linkedin-url');
 
         // Check if the LinkedIn URL is already in the array
-        const existingEntryIndex = dataLinkedinUrl.findIndex(entry => entry.linkedin_url === dataLinkedinUrlValue);
+        const existingEntryIndex = dataLinkedinUrl.findIndex(entry => entry.linkedin === dataLinkedinUrlValue);
 
         if (checkbox.checked) {
             // If not in the array, add a new entry
@@ -1026,6 +1066,7 @@ function saveDataLinkedinUrl() {
 
     // Save the data to localStorage
     localStorage.setItem('dataLinkedinUrl', JSON.stringify(dataLinkedinUrl));
+   $(customElement.shadowRoot.querySelector('#selected_people_total')).text(JSON.parse(localStorage.getItem('dataLinkedinUrl')).length);
 }
 
 function clearLocalStorageOnUnload() {
@@ -1038,6 +1079,7 @@ function clearLocalStorageOnUnload() {
 window.onbeforeunload = clearLocalStorageOnUnload;
 
 function CheckSavedPrimaryDomain() {
+    
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
     const savedDataPrimaryDomain = JSON.parse(localStorage.getItem('dataPrimaryDomain')) || [];
 
@@ -1047,6 +1089,8 @@ function CheckSavedPrimaryDomain() {
             checkbox.checked = true;
         }
     });
+
+
 
     // Push the entire saved data from localStorage into selectedDomains
     selectedDomains.push(...savedDataPrimaryDomain);
@@ -1114,15 +1158,13 @@ function retrieveDataLinkedinUrl() {
 // Update checkboxes from localStorage when the page loads
 window.addEventListener('load', retrieveDataPrimaryDomain);
 function handleCheckboxChange() {
-    // console.log(234324243234)
+    
     saveDataPrimaryDomain();
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
-    console.log(checkboxes)
-
+    
     // Check if every checkbox in the NodeList is checked
     var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
-    console.log(allChecked)
-
+   
     // Get the 'checkAllCompany' checkbox
     var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
 
@@ -1141,16 +1183,13 @@ function handleCheckboxChange() {
     findPeopleBtn.disabled = !isAnyChecked;
     if(isAnyChecked){
         $(customElement.shadowRoot.querySelector('#find-btn')).addClass('active')
-        // $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', false)
     } else {
         $(customElement.shadowRoot.querySelector('#find-btn')).removeClass('active')
-        // $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', true)
     }
     }
-    // const find_btn = $(customElement.shadowRoot.querySelector('#find-btn')).hasClass('active')
-    // const backBtn = $(customElement.shadowRoot.querySelector('#back-btn'))
+ 
 }
-//  window.addEventListener('load', retrieveDataLinkedinUrl);
+
 
 function ReviewCheckboxChange() {
     saveDataLinkedinUrl()
@@ -1699,6 +1738,8 @@ function getPeople(selectedDomains) {
     $(customElement.shadowRoot).find('#find-btn').addClass('d-none')
     $(customElement.shadowRoot.querySelector('#review-prospects-btn')).removeClass('d-none')
     const checkboxes = JSON.parse(localStorage.getItem('dataLinkedinUrl'));
+    
+   
     // totalCheckboxCount = checkboxes ? checkboxes.length : 0;
     const findReviewPrBtn = customElement.shadowRoot.querySelector('#review-prospects-btn');
     // Check if at least one checkbox is checked
@@ -1747,10 +1788,20 @@ function getPeople(selectedDomains) {
             if (response.fetched_count == 0){
                 var nodatafound = 'No results found';
             }
+           
             $.each(response.items, function (key, data) {
 
                 // var getcheckBoxdata = '';
                 // var checkboxTitle = '';
+                var chekedCheckbox="";
+                if(checkboxes){
+                    const matchingProfile = checkboxes.find(checkboxes => checkboxes.linkedin === data.person.linkedin_url);
+
+                    if (matchingProfile) {
+                        chekedCheckbox= 'checked';
+                    } 
+                }
+
 
                 if (data.person.checked == true) {
                     getcheckBoxdata = 'disabled';
@@ -1762,8 +1813,14 @@ function getPeople(selectedDomains) {
 
             table += '<tr class="accordion-header collapsed  accordion-item"  id="flush-heading' + key + '" >\n' +
 
-              '<td><div class="form-group form-check" data-bs-toggle="tooltip" data-placement="top" title="'+checkboxTitle+'">'+
-              '<input type="checkbox" class="form-check-input disable people_checkbox" '+getcheckBoxdata+' data-first-name="'+data.person.first_name+'" data-last-name="'+data.person.last_name+'" data-email="'+data.person.email+'" data-phone="'+data.person.organization.phone+'" data-company_name="'+data.person.organization.name+'" data-linkedin-url="'+data.person.linkedin_url+'" data-company_country="'+data.person.organization.country+'" data-city="'+data.person.city+'" data-state="'+data.person.state+'" data-phone-number="'+data.person.phone_numbers[0]+'" data-company_website="'+data.person.organization.website_url+'" data-contact_user_phonenumber="'+data.person.phone_numbers[0]+'" data-contact_user_country="'+data.person.country+'" data-primary_domain="'+data.person.organization.primary_domain+'"  name="client_checkbox[]" value="">'+
+              '<td><div class="form-group form-check" data-bs-toggle="tooltip" data-placement="top" title="'+checkboxTitle+'">';
+
+
+             
+            // If not in the array, add a new entry
+            
+       
+              table+='<input type="checkbox" class="form-check-input disable people_checkbox" '+getcheckBoxdata+' data-first-name="'+data.person.first_name+'" data-last-name="'+data.person.last_name+'" data-email="'+data.person.email+'" data-phone="'+data.person.organization.phone+'" data-company_name="'+data.person.organization.name+'" data-linkedin-url="'+data.person.linkedin_url+'" data-company_country="'+data.person.organization.country+'" data-city="'+data.person.city+'" data-state="'+data.person.state+'" data-phone-number="'+data.person.phone_numbers[0]+'" data-company_website="'+data.person.organization.website_url+'" data-contact_user_phonenumber="'+data.person.phone_numbers[0]+'" data-contact_user_country="'+data.person.country+'" data-primary_domain="'+data.person.organization.primary_domain+'"  name="client_checkbox[]" value="" '+chekedCheckbox+'>'+
               '</div></td>'+
                 '                        <td class="person-details d-flex align-items-center">\n' +
                 '                            <div class="profile-image">\n' +
@@ -1894,12 +1951,9 @@ function getPeople(selectedDomains) {
                     checkbox.checked = checkAllCheckbox.checked;
                 });
 
-                // Call saveDataPrimaryDomain function when Check All checkbox is checked
-                if (checkAllCheckbox.checked) {
-                    saveDataPrimaryDomain();
-                }else{
-                    saveDataPrimaryDomain();
-                }
+
+                // saveDataPrimaryDomain();
+                
 
                 // Update the class of #find-btn based on the state of the Check All checkbox
                 const findBtn = customElement.shadowRoot.querySelector('#find-btn');
@@ -1929,11 +1983,9 @@ function getPeople(selectedDomains) {
                 enabledCheckboxes.forEach(checkbox => {
                     checkbox.checked = checkAllPeopleCheckbox.checked;
                 });
-                if (checkAllPeopleCheckbox.checked) {
-                    saveDataLinkedinUrl();
-                }else{
-                    saveDataLinkedinUrl();
-                }
+               
+                saveDataLinkedinUrl();
+              
                 checkedCheckboxes = JSON.parse(localStorage.getItem('dataLinkedinUrl'))
                 if(checkedCheckboxes.length > 0){
                     $(customElement.shadowRoot.querySelector('#review-prospects-btn')).prop('disabled', false);

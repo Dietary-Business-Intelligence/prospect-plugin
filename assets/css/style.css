@@ -6277,3 +6277,10 @@ clip: auto;
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+.total_selected_count{
+  display: flex;
+
+}
+.total_selected_count p{
+  font-size: 14px;
+}

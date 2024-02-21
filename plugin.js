@@ -2,7 +2,7 @@ class CompaniesList extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-	console.log(window.envConfig)
+	
     }
 
     async connectedCallback() {
@@ -846,7 +846,7 @@ this.shadowRoot.appendChild(styleEl);
                     <span class="icon-filter_icon"></span>
                     <h6>Filters</h6>
                 </button>
-                <div class="manas d-flex justify-content-between align-items-center">
+                <div class="d-flex justify-content-between align-items-center">
                     <div class="d-sm-flex justify-content-between table-top ">
                         <h4 class="text-md-start mb-0" id="companies_count">Companies
                             <Span class="d-none" id="searchTitle">Total</Span>
@@ -874,7 +874,13 @@ this.shadowRoot.appendChild(styleEl);
                                     </div>
                                 </div>
                             </div>
-                    </div>`+
+                        </div>
+                    </div>
+                    <div class="total_selected_count">
+                            <h6 style="font-size:14px; margin-right: 18px;font-weight: 500;" class="text-md-start mb-0" id="selected_companies_count">Selected Companies : <Span style="font-weight:700" class="" id="selected_companies_total"></Span></h6>
+                            <h6 style="font-size:14px; margin-right: 18px;font-weight: 500;" class="text-md-start mb-0" id="selected_people_count">Selected People : <Span style="font-weight:700" class="" id="selected_people_total"></Span></h6>
+                       </div>
+                    `+
                 (window.globalConfig.source == 'customer_linking' ? `
                 <div class="wildcard-search d-flex justify-content-between" style="width:50%" id="search-nav">
                     <div class="search-box">
