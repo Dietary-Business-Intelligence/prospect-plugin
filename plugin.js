@@ -889,6 +889,8 @@ this.shadowRoot.appendChild(styleEl);
                 </div>` : ``)+`
             </div>`+
 
+
+            
             (window.globalConfig.source!= 'customer_linking' ? `
             <div class="total_selected_count">
                 <h6 style="font-size:14px; margin-right: 18px;font-weight: 500;" class="text-md-start mb-0" id="selected_companies_count">Selected Companies : <Span style="font-weight:700" class="" id="selected_companies_total"></Span></h6>
