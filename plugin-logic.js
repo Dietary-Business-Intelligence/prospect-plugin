@@ -318,7 +318,8 @@ function extractPrimaryDomain(input) {
 
 function headSearch(event) {
     if (event.key == 'Enter') {
-        if ($(customElement.shadowRoot.querySelector('#top_search')).val() != '') {
+        console.log('enter')
+        // if ($(customElement.shadowRoot.querySelector('#top_search')).val() != '') {
             current_page = 1
            
             $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
@@ -332,7 +333,7 @@ function headSearch(event) {
             } else {
                 getCompanies();
             }
-        }
+        // }
     }
 }
 setTimeout(() => {
