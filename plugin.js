@@ -193,7 +193,6 @@ this.shadowRoot.appendChild(styleEl);
 
                 if (!isScriptLoaded(window.envConfig.base_url + "plugin-logic.js")) {
                     await loadScript(window.envConfig.base_url + "plugin-logic.js");
-                   
                 }
 
                 if(window.globalConfig.source == 'customer_linking'){
@@ -855,7 +854,6 @@ this.shadowRoot.appendChild(styleEl);
                             <Span class="d-none" id="totalCountCompanies"></Span>
                             <Span class="d-none" id="totalSelectedCountCompany"></Span>
                         </h4>
-                        
                         <h4 class="text-md-start d-none mb-0" id="people_count">People
                             <Span class="d-none" id="searchTitle">Total</Span>
                             <Span class="d-none" id="searchCountPeople"></Span>
@@ -866,11 +864,9 @@ this.shadowRoot.appendChild(styleEl);
                             <Span class="d-none" id="searchCountProspect"></Span>
                             <Span class="d-none" id="totalCountReview"></Span>
                         </h4>
-                        
                     </div>
-                    
-                    <div class="search-select-wildcard d-flex" style="width:27%">
-                        <div class="wildcard-search d-flex justify-content-between pe-0" style="width:100%" id="search-nav">
+                    <div class="search-select-wildcard d-flex" style="width:55%">
+                        <div class="wildcard-search d-flex justify-content-between pe-0" style="width:50%" id="search-nav">
                             <div class="search-box">
                                 <div class=" d-flex justify-content-between">
                                     <div class="input-group">
