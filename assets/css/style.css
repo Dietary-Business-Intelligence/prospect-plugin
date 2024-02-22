@@ -6224,7 +6224,14 @@ clip: auto;
   position: sticky;
   top: 0;
   z-index: 99;
+  min-width: 150px;
 }
+.company-listing-data .table-responsive table th:first-child,
+.people-listing-data .table-responsive table th:first-child{
+  min-width:auto;
+}
+
+
 .select2-results__options{
   font-family: var(--primary-font);
   font-size: 13px;
