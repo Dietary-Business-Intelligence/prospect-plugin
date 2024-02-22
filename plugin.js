@@ -890,7 +890,7 @@ this.shadowRoot.appendChild(styleEl);
             </div>`+
 
 
-            
+
             (window.globalConfig.source!= 'customer_linking' ? `
             <div class="total_selected_count">
                 <h6 style="font-size:14px; margin-right: 18px;font-weight: 500;" class="text-md-start mb-0" id="selected_companies_count">Selected Companies : <Span style="font-weight:700" class="" id="selected_companies_total"></Span></h6>
@@ -918,9 +918,8 @@ this.shadowRoot.appendChild(styleEl);
                             <th class="sort_data" data-type="ingredient_count"># Ingredient</th>
                             <th class="sort_data" data-type="product_count"># Product</th>
                             <th class="sort_data" data-type="annual_revenue">Revenue</th>
-                            `+(window.globalConfig.source == 'customer_linking' ? `<th class="sort_data" data-type="account_owner">Account Owner</th>` : ``)+`
+                            `+(window.globalConfig.source == 'customer_linking' ? `<th>Account Owner</th>` : ``)+`
                             <th class="sort_data" data-type="last_update">Last Updated At</th>
-                            <th><span class="icon-info" data-bs-toggle="tooltip"  title="Company details"></span></th>
                         </tr>
                     </thead>
                     <tbody id="companies-data-table"></tbody>
