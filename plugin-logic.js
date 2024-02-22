@@ -1674,6 +1674,7 @@ function getSelectedOptionForLinkedInURL(linkedin_url) {
 
 function updateCheckAllCheckbox() {
     var checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
+    console.log(checkboxes)
     var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
     var allChecked = true;
 
@@ -1684,9 +1685,16 @@ function updateCheckAllCheckbox() {
             break;  // Exit the loop if at least one checkbox is not checked
         }
     }
+    if(checkboxes.length==0){
+        allChecked=false,
+        checkAllCheckbox.disabled=true;
+    }else{
+        checkAllCheckbox.disabled=false;
+    }
 
     // Set the checked property of the "Check All" checkbox
     if (checkAllCheckbox) {
+        
         checkAllCheckbox.checked = allChecked;
     }
 }
@@ -2128,26 +2136,26 @@ function getPeople(selectedDomains) {
     }
 // let count =0  ;
 
-    $(document).ajaxComplete(function() {
-        $(document).on('click', 'body *', function() {
+    // $(document).ajaxComplete(function() {
+    //     $(document).on('click', 'body *', function() {
         
-            var selectElement = $(customElement.shadowRoot.querySelector('#staff_select'));
-            if (selectElement.data('select2')) {
-                var isOpen = selectElement.data('select2').isOpen();
-                console.log('isOpen',isOpen)
+    //         var selectElement = $(customElement.shadowRoot.querySelector('#staff_select'));
+    //         if (selectElement.data('select2')) {
+    //             var isOpen = selectElement.data('select2').isOpen();
+    //             console.log('isOpen',isOpen)
                
     
-                if (isOpen) {
-                    // If open, then close it
-                    // if(count==1){
-                        selectElement.select2('close');
-                    // }
+    //             if (isOpen) {
+    //                 // If open, then close it
+    //                 // if(count==1){
+    //                     selectElement.select2('close');
+    //                 // }
                     
-                    // console.log('ajax select close');
-                }
-            }
-        });
-    });
+    //                 // console.log('ajax select close');
+    //             }
+    //         }
+    //     });
+    // });
 
     // $(document).on('click', 'body *', function(event) {
     //     // Selector for the element you want to exclude
@@ -2165,6 +2173,6 @@ function getPeople(selectedDomains) {
     // });
 
 
-    
-    
+
+
 
