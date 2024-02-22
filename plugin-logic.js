@@ -427,6 +427,7 @@ setTimeout(() => {
         }).serialize();
 
         $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
+        $(customElement.shadowRoot.querySelector('#top_search')).val('');
         getCompanies();
     })
 
@@ -556,6 +557,7 @@ setTimeout(() => {
             return $(this).val() != "";
         }).serialize();
         $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
+        $(customElement.shadowRoot.querySelector('#top_search')).val('');
         getCompanies();
 
     })
@@ -809,7 +811,7 @@ function getCompanies() {
         }
     }).done(function (response) {
         if (response.fetched_count == 0){
-            var nodatafound = 'No results found';
+            var nodatafound = '<tr><td colspan="13" class="text-center p-3">No results found</td></tr>';
            
         }
         let table = '';
@@ -897,9 +899,7 @@ function getCompanies() {
                 '                        <td class="lastupdated">\n' +
                 '                            <div class="metric-value">' + data.organization.last_update + '</div>\n' +
                 '                        </td>\n' +
-                '<td class="action-arrow" id="deptchart_keypeople"  >' +
-                '</div>' +
-                '</td>' +
+                
                 '                    </tr>\n' +
 
 
@@ -907,7 +907,7 @@ function getCompanies() {
         })
         $(customElement.shadowRoot.querySelector('#loader')).fadeOut();
         $(customElement.shadowRoot.querySelector('#companies-data-table')).html(table);
-        $(customElement.shadowRoot.querySelector('#companies-data-table')).text(nodatafound);
+        $(customElement.shadowRoot.querySelector('#companies-data-table')).html(nodatafound);
         $(customElement.shadowRoot.querySelector('#totalCountCompanies')).removeClass('d-none');
         var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
         if (checkAllCheckbox.checked===true) {
@@ -1934,7 +1934,9 @@ function getPeople(selectedDomains) {
             });
         });
         $(document).ajaxComplete(function() {
+            console.log('ajax complete')
             $(customElement.shadowRoot.querySelector(".default_companyimg")).on("error", function() {
+                console.log('error')
                 $(this).prop("src", ''+window.envConfig.base_url+'assets/img/default_company.png');
             });
         });
@@ -2124,5 +2126,45 @@ function getPeople(selectedDomains) {
             location.reload()
         }, 3000);
     }
+// let count =0  ;
+
+    $(document).ajaxComplete(function() {
+        $(document).on('click', 'body *', function() {
+        
+            var selectElement = $(customElement.shadowRoot.querySelector('#staff_select'));
+            if (selectElement.data('select2')) {
+                var isOpen = selectElement.data('select2').isOpen();
+                console.log('isOpen',isOpen)
+               
+    
+                if (isOpen) {
+                    // If open, then close it
+                    // if(count==1){
+                        selectElement.select2('close');
+                    // }
+                    
+                    // console.log('ajax select close');
+                }
+            }
+        });
+    });
+
+    // $(document).on('click', 'body *', function(event) {
+    //     // Selector for the element you want to exclude
+    //     var excludeSelector = $(customElement.shadowRoot.querySelector('#search-nav'));
+
+    //     var selectElement = $(customElement.shadowRoot.querySelector('#staff_select'));
+
+    //     // Check if the clicked element or any of its parents match the excludeSelector
+    //     // If so, return early from the function without executing the rest of the code
+    //     if ($(event.target).closest(excludeSelector).length) {
+    //         return;
+    //     }
+    
+    //     selectElement.select2('close');
+    // });
+
+
+    
     
 
