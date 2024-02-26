@@ -165,7 +165,7 @@ div.dataTables_wrapper div.dataTables_length select {
     border: 2px solid #69a9ff;
     font-size: 13px;
     font-family: 'Inter', sans-serif;
-    padding: 9px 39px 9px 7px;
+    padding: 9px 8px;
 }
 #search-nav .search-box input#top_search::placeholder {
     color: #707070;
@@ -3665,20 +3665,4 @@ html:not([dir=rtl]) .bs-stepper .bs-stepper-header .step:first-child .step-trigg
     font-size: 24px;
     color: #a4a4a4;
     margin-right: 18px;
-}
-.input-group-append {
-    position: absolute;
-    right: 6px;
-    top: 7px;
-    border: none !important;
-    z-index: 9999;
-    background-color:#696cff ;
-  }
-  .input-group-append button{
-    color: #fff;    
-}
-.input-group-append :hover {
-    color: #fff;
-    background-color: #494cdb;
-    border-color: #494cdb;
 }

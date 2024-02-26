@@ -2,7 +2,7 @@ class CompaniesList extends HTMLElement {
     constructor() {
         super();
         this.attachShadow({ mode: 'open' });
-
+	
     }
 
     async connectedCallback() {
@@ -47,157 +47,157 @@ class CompaniesList extends HTMLElement {
     
 `;
 
-        const styleEl = document.createElement('style');
-        styleEl.textContent = style;
-        this.shadowRoot.appendChild(styleEl);
+const styleEl = document.createElement('style');
+styleEl.textContent = style;
+this.shadowRoot.appendChild(styleEl);
 
 
-        // Utility function to check if a script has been loaded
-        const isScriptLoaded = (src) => {
-            return !!document.querySelector(`script[src="${src}"]`);
-        };
-
-        // Utility function to check if a stylesheet has been loaded
-        const isStyleLoaded = (href) => {
-            return !!document.querySelector(`link[href="${href}"]`);
-        };
-
-        // Your existing fetchCSS function (assuming it's something like this)
-        async function fetchCSS(url) {
-            const response = await fetch(url);
-            return response.text();
-        }
-
-        // Your existing loadScript function
-        async function loadScript(src, onLoadCallback) {
-            return new Promise((resolve, reject) => {
-                if (isScriptLoaded(src)) {
-                    resolve();
-                    return;
-                }
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = () => {
-                    if (onLoadCallback) onLoadCallback();
-                    resolve();
+                // Utility function to check if a script has been loaded
+                const isScriptLoaded = (src) => {
+                    return !!document.querySelector(`script[src="${src}"]`);
                 };
-                script.onerror = reject;
-                document.body.appendChild(script);
-            });
-        }
 
-        // Load CSS conditionally
-        if (!isStyleLoaded('https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css')) {
-            const bootstrapCSS = await fetchCSS("https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css");
-            const bootstrapStyleEl = document.createElement('style');
-            bootstrapStyleEl.textContent = bootstrapCSS;
-            this.shadowRoot.appendChild(bootstrapStyleEl);
-        }
+                // Utility function to check if a stylesheet has been loaded
+                const isStyleLoaded = (href) => {
+                    return !!document.querySelector(`link[href="${href}"]`);
+                };
 
-        if (!isStyleLoaded('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css')) {
-            const linkEl = document.createElement('link');
-            linkEl.rel = 'stylesheet';
-            linkEl.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css';
-            this.shadowRoot.appendChild(linkEl);
-        }
+                // Your existing fetchCSS function (assuming it's something like this)
+                async function fetchCSS(url) {
+                    const response = await fetch(url);
+                    return response.text();
+                }
 
-        if (!isStyleLoaded('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css')) {
-            const select2CSS = await fetchCSS("https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css");
-            const select2StyleEl = document.createElement('style');
-            select2StyleEl.textContent = select2CSS;
-            this.shadowRoot.appendChild(select2StyleEl);
-        }
+                // Your existing loadScript function
+                async function loadScript(src, onLoadCallback) {
+                    return new Promise((resolve, reject) => {
+                        if (isScriptLoaded(src)) {
+                            resolve();
+                            return;
+                        }
+                        const script = document.createElement('script');
+                        script.src = src;
+                        script.onload = () => {
+                            if (onLoadCallback) onLoadCallback();
+                            resolve();
+                        };
+                        script.onerror = reject;
+                        document.body.appendChild(script);
+                    });
+                }
 
-        if (!isStyleLoaded('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css')) {
-            const bxCSS = await fetchCSS("https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css");
-            const bxStyleEl = document.createElement('style');
-            bxStyleEl.textContent = bxCSS;
-            this.shadowRoot.appendChild(bxStyleEl);
-        }
+                // Load CSS conditionally
+                if (!isStyleLoaded('https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css')) {
+                    const bootstrapCSS = await fetchCSS("https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css");
+                    const bootstrapStyleEl = document.createElement('style');
+                    bootstrapStyleEl.textContent = bootstrapCSS;
+                    this.shadowRoot.appendChild(bootstrapStyleEl);
+                }
 
-        // if (!isStyleLoaded('https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css')) {
-        //     const bxCSS = await fetchCSS("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css");
-        //     const bxStyleEl = document.createElement('style');
-        //     bxStyleEl.textContent = bxCSS;
-        //     this.shadowRoot.appendChild(bxStyleEl);
-        // }
-        // Conditionally load main.css
-        if (!isStyleLoaded(window.envConfig.base_url + 'assets/css/main.css')) {
-            const localMainCssLink = document.createElement('link');
-            localMainCssLink.rel = 'stylesheet';
-            localMainCssLink.href = window.envConfig.base_url + 'assets/css/main.css';
-            this.shadowRoot.appendChild(localMainCssLink);
-        }
+                if (!isStyleLoaded('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css')) {
+                    const linkEl = document.createElement('link');
+                    linkEl.rel = 'stylesheet';
+                    linkEl.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.css';
+                    this.shadowRoot.appendChild(linkEl);
+                }
 
-        // Conditionally load style.css
-        if (!isStyleLoaded(window.envConfig.base_url + 'assets/css/style.css')) {
-            const localStyleCssLink = document.createElement('link');
-            localStyleCssLink.rel = 'stylesheet';
-            localStyleCssLink.href = window.envConfig.base_url + 'assets/css/style.css';
-            this.shadowRoot.appendChild(localStyleCssLink);
-        }
+                if (!isStyleLoaded('https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css')) {
+                    const select2CSS = await fetchCSS("https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css");
+                    const select2StyleEl = document.createElement('style');
+                    select2StyleEl.textContent = select2CSS;
+                    this.shadowRoot.appendChild(select2StyleEl);
+                }
+                
+                if (!isStyleLoaded('https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css')) {
+                    const bxCSS = await fetchCSS("https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css");
+                    const bxStyleEl = document.createElement('style');
+                    bxStyleEl.textContent = bxCSS;
+                    this.shadowRoot.appendChild(bxStyleEl);
+                }
+
+                // if (!isStyleLoaded('https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css')) {
+                //     const bxCSS = await fetchCSS("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css");
+                //     const bxStyleEl = document.createElement('style');
+                //     bxStyleEl.textContent = bxCSS;
+                //     this.shadowRoot.appendChild(bxStyleEl);
+                // }
+                        // Conditionally load main.css
+                if (!isStyleLoaded(window.envConfig.base_url + 'assets/css/main.css')) {
+                    const localMainCssLink = document.createElement('link');
+                    localMainCssLink.rel = 'stylesheet';
+                    localMainCssLink.href = window.envConfig.base_url + 'assets/css/main.css';
+                    this.shadowRoot.appendChild(localMainCssLink);
+                }
+
+                // Conditionally load style.css
+                if (!isStyleLoaded(window.envConfig.base_url + 'assets/css/style.css')) {
+                    const localStyleCssLink = document.createElement('link');
+                    localStyleCssLink.rel = 'stylesheet';
+                    localStyleCssLink.href = window.envConfig.base_url + 'assets/css/style.css';
+                    this.shadowRoot.appendChild(localStyleCssLink);
+                }
 
 
 
-        // Conditionally fetch and append the font style
-        //if (!isStyleLoaded("'Inter', sans-serif")) {
-        const fontCSS = await fetch("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap")
-            .then(response => response.text());
+                  // Conditionally fetch and append the font style
+                  //if (!isStyleLoaded("'Inter', sans-serif")) {
+                      const fontCSS = await fetch("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap")
+                                             .then(response => response.text());
 
-        const fontStyleEl = document.createElement('style');
-        fontStyleEl.textContent = fontCSS;
-        this.shadowRoot.appendChild(fontStyleEl);
-        //}
+                      const fontStyleEl = document.createElement('style');
+                      fontStyleEl.textContent = fontCSS;
+                      this.shadowRoot.appendChild(fontStyleEl);
+                  //}
 
 
-        // Load scripts conditionally
-        if (!isScriptLoaded("https://code.jquery.com/jquery-3.7.1.min.js")) {
-            await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
-        }
+                // Load scripts conditionally
+                if (!isScriptLoaded("https://code.jquery.com/jquery-3.7.1.min.js")) {
+                    await loadScript("https://code.jquery.com/jquery-3.7.1.min.js");
+                }
 
-        if (!isScriptLoaded("https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js")) {
-            await loadScript("https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js");
-        }
+                if (!isScriptLoaded("https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js")) {
+                    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.10.2/umd/popper.min.js");
+                }
 
-        if (!isScriptLoaded("https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js")) {
-            await loadScript("https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js");
-        }
+                if (!isScriptLoaded("https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js")) {
+                    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js");
+                }
 
-        if (!isScriptLoaded("https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js")) {
-            await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js");
-        }
+                if (!isScriptLoaded("https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js")) {
+                    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jQuery-slimScroll/1.3.8/jquery.slimscroll.min.js");
+                }
 
-        if (!isScriptLoaded("https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js")) {
-            await loadScript("https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js");
-        }
+                if (!isScriptLoaded("https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js")) {
+                    await loadScript("https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js");
+                }
 
-        if (!isScriptLoaded("https://cdn.amcharts.com/lib/4/core.js")) {
-            await loadScript("https://cdn.amcharts.com/lib/4/core.js");
-        }
+                if (!isScriptLoaded("https://cdn.amcharts.com/lib/4/core.js")) {
+                    await loadScript("https://cdn.amcharts.com/lib/4/core.js");
+                }
 
-        if (!isScriptLoaded("https://cdn.amcharts.com/lib/4/charts.js")) {
-            await loadScript("https://cdn.amcharts.com/lib/4/charts.js");
-        }
+                if (!isScriptLoaded("https://cdn.amcharts.com/lib/4/charts.js")) {
+                    await loadScript("https://cdn.amcharts.com/lib/4/charts.js");
+                }
 
-        if (!isScriptLoaded("https://cdn.amcharts.com/lib/4/themes/animated.js")) {
-            await loadScript("https://cdn.amcharts.com/lib/4/themes/animated.js");
-        }
+                if (!isScriptLoaded("https://cdn.amcharts.com/lib/4/themes/animated.js")) {
+                    await loadScript("https://cdn.amcharts.com/lib/4/themes/animated.js");
+                }
 
-        if (!isScriptLoaded("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js")) {
-            await loadScript("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js");
-        }
+                if (!isScriptLoaded("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js")) {
+                    await loadScript("https://unpkg.com/boxicons@2.1.4/dist/boxicons.js");
+                }
 
-        if (!isScriptLoaded("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js")) {
-            await loadScript("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js");
-        }
+                if (!isScriptLoaded("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js")) {
+                    await loadScript("https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js");
+                }
 
-        if (!isScriptLoaded(window.envConfig.base_url + "plugin-logic.js")) {
-            await loadScript(window.envConfig.base_url + "plugin-logic.js");
-        }
+                if (!isScriptLoaded(window.envConfig.base_url + "plugin-logic.js")) {
+                    await loadScript(window.envConfig.base_url + "plugin-logic.js");
+                }
 
-        if(window.globalConfig.source == 'customer_linking'){
+                if(window.globalConfig.source == 'customer_linking'){
 
-        }
+                }
 
         this.shadowRoot.innerHTML += (window.globalConfig.source != 'customer_linking' ? `
         <div class="d-flex tab-section align-items-center justify-content-between">
@@ -789,15 +789,15 @@ class CompaniesList extends HTMLElement {
                              <select id="assigned_to_me_suggest_list" name="assigned_to_me[]" class="form-control form-select assigned_to_me_suggest companies-filter" data-placeholder="Choose ">
                                  <option value="0" selected>All</option>
                                  `+
-            (window.globalConfig.source == 'customer_linking' ? `<option value="2">Assigned</option><option value="3">Unassigned</option>` : `<option value="1">Assigned to me</option>`)+
-            `</select>
+                                (window.globalConfig.source == 'customer_linking' ? `<option value="2">Assigned</option><option value="3">Unassigned</option>` : `<option value="1">Assigned to me</option>`)+
+                             `</select>
                          </div>
                      </div>
                  </div>
              </div>`+
-            (window.globalConfig.source == 'customer_linking' ?
+             (window.globalConfig.source == 'customer_linking' ? 
 
-                `<div class="accordion-item">
+             `<div class="accordion-item">
                  <h2 class="accordion-header" id>
                      <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse28"
                              aria-expanded="false" aria-controls="collapse28" >
@@ -814,7 +814,7 @@ class CompaniesList extends HTMLElement {
                  </div>
              </div>` : ``)+
 
-            `</div>
+        `</div>
         </form>
     </div>
 </div>
@@ -865,27 +865,20 @@ class CompaniesList extends HTMLElement {
                             <Span class="d-none" id="totalCountReview"></Span>
                         </h4>
                     </div>
-                                        <div class="search-select-wildcard d-flex" style="width:55%">
-                    <div class="wildcard-search d-flex justify-content-between pe-0" style="width: 50%" id="search-nav">
-                    <div class="search-box">
-                        <div class="d-flex justify-content-between">
-                            <div class="input-group">
-                                <input type="text" placeholder="Search ..." id="top_search" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" onkeydown="headSearch(event)" oninput="toggleSearchButton()">
-                                <div class="input-group-append">
-                                    <button id="searchButton" style="display: none;" onclick="clearSearch()" class="btn btn-outline-secondary" type="button">
-                                        <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 352 512">
-                                            <path fill="currentColor" d="M313.48 364.52c-9.373 9.373-24.569 9.373-33.941 0L176 229.941 71.461 334.48c-9.373 9.373-24.569 9.373-33.941 0s-9.373-24.569 0-33.941L142.059 176 37.52 71.461c-9.373-9.373-9.373-24.569 0-33.941s24.569-9.373 33.941 0L176 122.059l104.539-104.54c9.373-9.373 24.569-9.373 33.941 0s9.373 24.569 0 33.941L209.941 176l104.54 104.539c9.373 9.373 9.373 24.569 0 33.941z"/>
-                                        </svg>
-                                    </button>
+                    <div class="search-select-wildcard d-flex" style="width:55%">
+                        <div class="wildcard-search d-flex justify-content-between pe-0" style="width:50%" id="search-nav">
+                            <div class="search-box">
+                                <div class=" d-flex justify-content-between">
+                                    <div class="input-group">
+                                        <input type="text" placeholder="Search ..." id="top_search" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" onkeydown="headSearch(event)">
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                </div>
                     
                    
                     `+
-            (window.globalConfig.source == 'customer_linking' ? `
+                (window.globalConfig.source == 'customer_linking' ? `
                 <div class="wildcard-search d-flex justify-content-between" style="width:50%" id="search-nav">
                     <div class="search-box">
                         <div class="d-flex  Select_staff_assign">
@@ -893,16 +886,16 @@ class CompaniesList extends HTMLElement {
                             <button type="button" class="btn btn-primary" id="assign_companies" onclick="assign_companies()" disabled>Assign</button>
                         </div>
                     </div>
-                </div>` : ``) + `
+                </div>` : ``)+`
             </div>`+
 
 
 
-            (window.globalConfig.source != 'customer_linking' ? `
+            (window.globalConfig.source!= 'customer_linking' ? `
             <div class="total_selected_count">
                 <h6 style="font-size:14px; margin-right: 18px;font-weight: 500;" class="text-md-start mb-0" id="selected_companies_count">Selected Companies : <Span style="font-weight:700" class="" id="selected_companies_total"></Span></h6>
                 <h6 style="font-size:14px; margin-right: 18px;font-weight: 500;" class="text-md-start mb-0" id="selected_people_count">Selected People : <Span style="font-weight:700" class="" id="selected_people_total"></Span></h6>
-        </div>` : ``) + `
+        </div>` : ``)+`
                 </div>
             </div>
             <div class="clearfix"></div>
@@ -977,7 +970,7 @@ class CompaniesList extends HTMLElement {
             </table>
         </div>
         </div>
-        <div id="loader" class="loader-new"><img src="`+ window.envConfig.base_url + `assets/img/Infinity-2s-86px.svg"></div>
+        <div id="loader" class="loader-new"><img src="`+window.envConfig.base_url+`assets/img/Infinity-2s-86px.svg"></div>
 
         <!-- Pagination -->
         <div class="pagination-container d-flex justify-content-between align-items-center mt-3 mb-3" id="paginationContainer1">
