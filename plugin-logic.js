@@ -8,8 +8,10 @@ let customElement = document.querySelector("companies-list");
 let selectedDomains = [];
 let selectedItems = [];
 let dataLinkedinUrl = [];
-let go_to_review = false
-
+let go_to_review = false;
+localStorage.setItem('total_company_count',10);
+localStorage.setItem('total_people_count',10);
+localStorage.setItem('total_prospect_count',10);
 $(document).ready(function() {
     
     if(localStorage.getItem('dataPrimaryDomain')){
@@ -73,13 +75,14 @@ $(document).ready(function() {
             width: '100%'
         });
     })
-    $(customElement.shadowRoot.querySelector('#companies_selected')).on('click', function () {
-        location.reload();
-    })
+    // $(customElement.shadowRoot.querySelector('#companies_selected')).on('click', function () {
+    //     location.reload();
+    // })
     
 
         // Pagination functionality    
         function setupPaginationListener(selector) {
+            
             $(customElement.shadowRoot.querySelector(selector)).on('change', function () {
                 current_page = parseInt($(customElement.shadowRoot.querySelector(selector)).val());
               
@@ -208,6 +211,11 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelector('#find-btn')).removeClass('d-none')
                 $(customElement.shadowRoot.querySelector('#find-btn')).addClass('active')
                 $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', false)
+                
+                customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_company_count');
+                customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_company_count');
+                customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_company_count');
+
                 getCompanies();
             } else if($(customElement.shadowRoot.querySelector('#review_prospects_content')).hasClass('active')) {
                 $(customElement.shadowRoot.querySelector('#people_count')).removeClass('d-none')
@@ -219,10 +227,13 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelector('#add-to-lead-btn')).addClass('d-none')
                 $(customElement.shadowRoot.querySelector('#find_people_content')).addClass('active')
                 $(customElement.shadowRoot.querySelector('#review_prospects_content')).removeClass('active')
+                
+                customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
+                customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
+                customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
                 getPeople(selectedDomains);
-            } else {
-                getCompanies();
-            }
+                
+            } 
         })
     });
 
@@ -808,18 +819,14 @@ function linkFilter(fieldName,data,fieldId,collapseId) {
 function getCompanies() {
    
     let total_entries;
-    let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
-    for (let selector of entries_selector) {
-        let element = customElement.shadowRoot.querySelector(selector);
+    let element = customElement.shadowRoot.querySelector("#entries-select-1");
 
-        if (element) {
-            total_entries = $(element).val();
-            break;
-        }
-    }
+    total_entries = $(element).val();
 
     // Default to 10 if no matching element is found
     total_entries = total_entries || 10;
+
+    localStorage.setItem('total_company_count', total_entries);
 
     $(customElement.shadowRoot.querySelector('#loader')).fadeIn();
     if(fieldName == ""){
@@ -1271,20 +1278,13 @@ function reviewProspects(){
 }
 
 function addToLeadNew(selectedDomains){
-    let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
-    let total_entries;
 
-    for (let selector of entries_selector) {
-        let element = customElement.shadowRoot.querySelector(selector);
-
-        if (element) {
-            total_entries = $(element).val();
-            break;
-        }
-    }
-
+    let element = customElement.shadowRoot.querySelector("#entries-select-2");
+    total_entries = $(element).val();
+    
     // Default to 10 if no matching element is found
     total_entries = total_entries || 10;
+    localStorage.setItem('total_prospect_count', total_entries);
 
     $(customElement.shadowRoot.querySelector('#loader')).fadeIn();
     if(fieldName == ""){
@@ -1433,6 +1433,9 @@ $(document).on('ajaxComplete', (event) => {
     const findPeopleBtn = customElement.shadowRoot.querySelector('#find-btn');
     if(findPeopleBtn){
         findPeopleBtn.addEventListener('click', function() {
+            customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
+            customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
+            customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
             // $(customElement.shadowRoot.querySelector('#find-btn'))
             $(customElement.shadowRoot.querySelector('#paginationContainer1')).addClass('d-none')
             $(customElement.shadowRoot.querySelector('#paginationContainer2')).removeClass('d-none')
@@ -1495,6 +1498,9 @@ $(document).on('ajaxComplete', (event) => {
     }
 
     $(customElement.shadowRoot.querySelectorAll('#review-prospects-btn')).on('click', function() {
+        customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_prospect_count');
+        customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_prospect_count');
+        customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_prospect_count');
         selectedItems = JSON.parse(localStorage.getItem('dataLinkedinUrl'))
         current_page = 1
         reviewProspects();
@@ -1749,11 +1755,12 @@ function updateCheckAllCheckboxPeople() {
 
     // Iterate through checkboxes to check if all are checked
     for (var i = 0; i < checkboxes.length; i++) {
-        if (!checkboxes[i].checked) {
+        if (!checkboxes[i].checked && !checkboxes[i].disabled) {
             allChecked = false;
             break;  // Exit the loop if at least one checkbox is not checked
         }
     }
+
 
     // Set the checked property of the "Check All" checkbox
     if (checkAllCheckbox) {
@@ -1766,20 +1773,13 @@ function getPeople(selectedDomains) {
     //CheckSavedPrimaryDomain()
     //updateCheckAllCheckboxPeople()
     selectedDomains = Array.from(new Set(selectedDomains));
-    let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
-    let total_entries;
+    let element = customElement.shadowRoot.querySelector('#entries-select-2');
+    total_entries = $(element).val();
 
-    for (let selector of entries_selector) {
-        let element = customElement.shadowRoot.querySelector(selector);
-
-        if (element) {
-            total_entries = $(element).val();
-            break;
-        }
-    }
 
     // Default to 10 if no matching element is found
     total_entries = total_entries || 10;
+    localStorage.setItem('total_people_count', total_entries);
 
     $(customElement.shadowRoot.querySelector('#loader')).fadeIn();
     $(customElement.shadowRoot.querySelector('#find_people_content')).addClass('active')
