@@ -83,16 +83,20 @@ $(document).ready(function() {
         // Pagination functionality    
         function setupPaginationListener(selector) {
             
+            
             $(customElement.shadowRoot.querySelector(selector)).on('change', function () {
+               
                 current_page = parseInt($(customElement.shadowRoot.querySelector(selector)).val());
               
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
+                
                     getPeople(selectedDomains);
                     // showPagination(1)
                 } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
                     // showPagination(2)
                     addToLeadNew(selectedDomains);
                 } else {
+                    
                     getCompanies();
                     // showPagination(0)
                 }
@@ -112,13 +116,35 @@ $(document).ready(function() {
                 current_page = 1;
                 $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
                 total_entries = $(this).val();
+              
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
+                    localStorage.setItem('total_people_count', total_entries);
+                    
+                    
+                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
+                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
+                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
                     getPeople(selectedDomains);
                    
                 } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
+                    
+                    localStorage.setItem('total_prospect_count', total_entries);
+                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_prospect_count');
+                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_prospect_count');
+                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_prospect_count');
+    
+                 
                     addToLeadNew(selectedDomains);
                    
                 } else {
+                   
+                    localStorage.setItem('total_company_count', total_entries);
+                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_company_count');
+                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_company_count');
+                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_company_count');
+    
+                 
+
                     getCompanies();
                     
                 }
@@ -215,7 +241,10 @@ $(document).ready(function() {
                 customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_company_count');
                 customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_company_count');
                 customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_company_count');
-
+                //$(customElement.shadowRoot.querySelector('#pageSelect1')).val(1);
+      
+                current_page=1;
+    
                 getCompanies();
             } else if($(customElement.shadowRoot.querySelector('#review_prospects_content')).hasClass('active')) {
                 $(customElement.shadowRoot.querySelector('#people_count')).removeClass('d-none')
@@ -231,7 +260,9 @@ $(document).ready(function() {
                 customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
                 customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
                 customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
+                current_page=1;
                 getPeople(selectedDomains);
+               
                 
             } 
         })
@@ -365,7 +396,13 @@ function headSearch(event) {
         console.log('search value...',searchValue)
         if (searchValue === '') { 
             filter_data = ''; 
-            getCompanies();
+            if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
+                getPeople(selectedDomains);
+            } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
+                addToLeadNew(selectedDomains);
+            } else {
+                getCompanies();
+            }
         } 
     } 
 }
@@ -675,6 +712,7 @@ function generatePagination(total_pages) {
             break;
         }
     }
+    
 
     if (total_pages >= 100) {
         var visible_pages = 100;
@@ -727,6 +765,9 @@ function generatePagination(total_pages) {
             
         }
     }
+
+
+
 }
 
 
@@ -820,7 +861,7 @@ function getCompanies() {
    
     let total_entries;
     let element = customElement.shadowRoot.querySelector("#entries-select-1");
-
+    
     total_entries = $(element).val();
 
     // Default to 10 if no matching element is found
@@ -839,7 +880,7 @@ function getCompanies() {
     }else {
         var sort_order = sortOrder;
     }
-
+ 
     $.ajax({
         type: "POST",
         url: window.envConfig.masterapi_url +  "/ajax_companies_listing",
@@ -926,18 +967,18 @@ function getCompanies() {
                 '                            <a data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.industry+'\', \'industry_suggest_list\', \'collapse5\')" title="' + data.organization.industry + '">' + (data.organization.industry == null ? "N/A" : data.organization.industry) + '</a>\n' +
                 '                        </td>\n' +
                 '                        <td>\n' +
-                '                            <span data-bs-toggle="tooltip" title="' + data.organization.merged_keywords + '">' + data.organization.merged_keywords + '</span>\n' +
+                '                            <span data-bs-toggle="tooltip" onclick="linkFilter(\'Keyword Type\', \''+data.organization.merged_keywords+'\', \'keyword_suggest_list\', \'collapse7\')" title="' + data.organization.merged_keywords + '">' + data.organization.merged_keywords + '</span>\n' +
                 '                        </td>\n' +
-                '                        <td class="location"><span data-bs-toggle="tooltip" title="' +data.organization.company_location+'">' +data.organization.company_location+'</span></td>\n' +
-                '                        <td class="company_type"><span data-bs-toggle="tooltip" title="' +data.organization.company_type+'">' +data.organization.company_type+'</span></td>\n' +
+                '                        <td class="location"><span data-bs-toggle="tooltip" onclick="linkFilter(\'City \', \''+data.organization.company_location+'\', \'company_city_suggest_list\', \'collapse4\')" title="' +data.organization.company_location+'">' +data.organization.company_location+'</span></td>\n' +
+                '                        <td class="company_type"><span data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.company_type+'\', \'company_type_suggest_list\', \'collapse20\')" title="' +data.organization.company_type+'">' +data.organization.company_type+'</span></td>\n' +
                 '                        <td class="EmployeeSize">\n' +
-                '                            <span>' + data.organization.people_count_printed + '</span>\n' +
+                '                            <span onclick="linkFilter(\'People Count \', \''+data.organization.people_count_printed+'\', \'people_count_suggest_list\', \'collapse9\')">' + data.organization.people_count_printed + '</span>\n' +
                 '                        </td>\n' +
                 '                        <td class="IngredientCount">\n' +
-                '                        ' + data.organization.ingredient_count_printed + ' \n' +
+                '                        <span onclick="linkFilter(\'People Count \', \''+data.organization.ingredient_count_printed+'\', \'ingredient_count_suggest_list\', \'collapse26\')">' + data.organization.ingredient_count_printed + '</span> \n' +
                 '                        </td>\n' +
                 '                        <td class="productcount">\n' +
-                '                            <span>' + data.organization.product_count_printed + '</span>\n' +
+                '                            <span onclick="linkFilter(\'Product Count \', \''+data.organization.product_count_printed+'\', \'product_count_suggest_list\', \'collapse10\')">' + data.organization.product_count_printed + '</span>\n' +
                 '                        </td>\n' +
                 '                        <td class="companyRevenue">\n' +
                 '                            <div class="metric-value">$' + data.organization.annual_revenue_printed + '</div>\n' +
