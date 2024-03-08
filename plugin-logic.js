@@ -376,13 +376,15 @@ function extractPrimaryDomain(input) {
 function headSearch(event) {
 
     if (event.key == 'Enter') {
+        
         // Handle Enter key press
         $(customElement.shadowRoot.querySelector('#checkAllCompany')).checked = false;
         current_page = 1;
         $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
         var getExtractData = extractPrimaryDomain($(customElement.shadowRoot.querySelector('#top_search')).val());
-        console.log('getExtractData', getExtractData);
+       
         filter_data = 'wildcard[]=' + getExtractData + '&';
+        console.log('filter_data', filter_data);
         if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
             getPeople(selectedDomains);
         } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
@@ -391,10 +393,12 @@ function headSearch(event) {
             getCompanies();
         }
     } else if (event.key == 'Backspace') {
+        
         var searchInput = $(customElement.shadowRoot.querySelector('#top_search'));
         var searchValue = searchInput.val().trim();
+       
         console.log('search value...',searchValue)
-        if (searchValue === '') { 
+        if (searchValue == '') { 
             filter_data = ''; 
             if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
                 getPeople(selectedDomains);
@@ -424,7 +428,7 @@ function toggleSearchButton() {
 function clearSearch() {
     var searchInput = $(customElement.shadowRoot.querySelector('#top_search'));
     var searchButton = $(customElement.shadowRoot.querySelector('#searchButton'));
-
+   
     // Check if searchInput and searchButton are found
     if (searchInput.length > 0 && searchButton.length > 0) {
         // Clear the filter search
@@ -435,7 +439,13 @@ function clearSearch() {
         filter_data = ''; // Assuming filter_data is a global variable
 
         // Call the function to re-fetch API data
-        getCompanies();
+        if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
+            getPeople(selectedDomains);
+        } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
+            addToLeadNew(selectedDomains);
+        } else {
+            getCompanies();
+        }
     } else {
         console.error('Search input or search button not found.');
     }
@@ -565,7 +575,13 @@ setTimeout(() => {
         filter_data +=getFilterfields('keyword_data','class') + $('#people-filter-form').find("").filter(function(){ return $(this).val() != ""; }).serialize();
         filter_data +=getFilterfields('seniority_data','class') + $('#people-filter-form').find("").filter(function(){ return $(this).val() != ""; }).serialize();
         $('html, body').scrollTop(0);
-        getPeople(selectedDomains);
+        if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
+            getPeople(selectedDomains);
+        
+        } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
+            addToLeadNew(selectedDomains);
+        } 
+        // getPeople(selectedDomains);
 
     })
 }, 1000)
@@ -1359,7 +1375,7 @@ function addToLeadNew(selectedDomains){
     }).done(function (response) {
             let table = '';
             if (response.fetched_count == 0){
-                var nodatafound = 'No results found';
+                var nodatafound = '<tr><td colspan="8" class="text-center p-3">No results found</td></tr>';
             }
             $.each(response.items, function (key, data) {
             table += '<tr class="accordion-header collapsed  accordion-item"  id="flush-heading' + key + '" >\n' +
@@ -1453,7 +1469,7 @@ function addToLeadNew(selectedDomains){
             })
             $(customElement.shadowRoot.querySelector('#loader')).fadeOut();
         $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).html(table);
-        $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).text(nodatafound);
+        $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).html(nodatafound);
         $(customElement.shadowRoot.querySelector('#totalCountReview')).removeClass('d-none');
         if(response.fetched_count !== response.total_count){
             $(customElement.shadowRoot.querySelector('#totalCountReview')).text(response.fetched_count.toLocaleString());
@@ -1877,7 +1893,7 @@ function getPeople(selectedDomains) {
             let table = '';
 
             if (response.fetched_count == 0){
-                var nodatafound = 'No results found';
+                var nodatafound = '<tr><td colspan="8" class="text-center p-3">No results found</td></tr>';
             }
            
             $.each(response.items, function (key, data) {
@@ -2001,7 +2017,7 @@ function getPeople(selectedDomains) {
             })
             $(customElement.shadowRoot.querySelector('#loader')).fadeOut();
         $(customElement.shadowRoot.querySelector('#people-data-table')).html(table);
-        $(customElement.shadowRoot.querySelector('#people-data-table')).text(nodatafound);
+        $(customElement.shadowRoot.querySelector('#people-data-table')).html(nodatafound);
         $(customElement.shadowRoot.querySelector('#totalCountPeople')).removeClass('d-none');
         if(response.fetched_count == response.total_count){
             $(customElement.shadowRoot.querySelector('#totalCountPeople')).text(response.fetched_count.toLocaleString());
