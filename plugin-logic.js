@@ -8,30 +8,12 @@ let customElement = document.querySelector("companies-list");
 let selectedDomains = [];
 let selectedItems = [];
 let dataLinkedinUrl = [];
-let go_to_review = false;
-localStorage.setItem('total_company_count',10);
-localStorage.setItem('total_people_count',10);
-localStorage.setItem('total_prospect_count',10);
+let go_to_review = false
+
 $(document).ready(function() {
-    
-    if(localStorage.getItem('dataPrimaryDomain')){
-        $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
-      
-    }else{
-        $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(0);
-    }
-    if(localStorage.getItem('dataLinkedinUrl')){
-        $(customElement.shadowRoot.querySelector('#selected_people_total')).text(JSON.parse(localStorage.getItem('dataLinkedinUrl')).length);
-      
-    }else{
-        $(customElement.shadowRoot.querySelector('#selected_people_total')).text(0);
-    }
+    console.log('hiii please work')
 
-    
-
-    
-
-    $(customElement.shadowRoot.querySelectorAll('.select2-show-search')).each(function() {
+   $(customElement.shadowRoot.querySelectorAll('.select2-show-search')).each(function() {
         var selectElement = $(this);  // Get a jQuery object for the select element
         var isSelect2Clicked = false;
         selectElement.select2({
@@ -51,52 +33,40 @@ $(document).ready(function() {
                     });
                 },
                 processResults: function (data, params) {
-                    try {
-                        var parsedData = JSON.parse(data);
-                        return {
-                            results: $.map(parsedData.unique_names, function (item,key) {
-                                return {
-                                    text: item.key,
-                                    id: item.key
-                                };
-                            })
-                        };
-                    } catch (e) {
-                        console.error("Error parsing JSON data", e);
-                        return {
-                            results: []
-                        };
-                    }
+                    return {
+                        results: $.map(data.unique_names.buckets, function (item, key) {
+                            return {
+                                text: item.key,
+                                id: item.key
+                            }
+                        })
+                    };
                 }
             },
-            // dropdownParent: selectElement.parent(),
-            // minimumInputLength: 1,
+            dropdownParent: selectElement.parent(),
+            minimumInputLength: 1,
             multiple: true,
             width: '100%'
         });
     })
-    // $(customElement.shadowRoot.querySelector('#companies_selected')).on('click', function () {
-    //     location.reload();
-    // })
+    $(customElement.shadowRoot.querySelector('#companies_selected')).on('click', function () {
+        location.reload();
+    })
     
 
         // Pagination functionality    
         function setupPaginationListener(selector) {
-            
-            
+            console.log('selector',selector)
             $(customElement.shadowRoot.querySelector(selector)).on('change', function () {
-               
                 current_page = parseInt($(customElement.shadowRoot.querySelector(selector)).val());
-              
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-                
                     getPeople(selectedDomains);
                     // showPagination(1)
                 } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
+                    console.log(423423423423)
                     // showPagination(2)
                     addToLeadNew(selectedDomains);
                 } else {
-                    
                     getCompanies();
                     // showPagination(0)
                 }
@@ -116,35 +86,13 @@ $(document).ready(function() {
                 current_page = 1;
                 $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
                 total_entries = $(this).val();
-              
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-                    localStorage.setItem('total_people_count', total_entries);
-                    
-                    
-                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
-                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
-                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
                     getPeople(selectedDomains);
                    
                 } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
-                    
-                    localStorage.setItem('total_prospect_count', total_entries);
-                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_prospect_count');
-                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_prospect_count');
-                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_prospect_count');
-    
-                 
                     addToLeadNew(selectedDomains);
                    
                 } else {
-                   
-                    localStorage.setItem('total_company_count', total_entries);
-                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_company_count');
-                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_company_count');
-                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_company_count');
-    
-                 
-
                     getCompanies();
                     
                 }
@@ -164,6 +112,7 @@ $(document).ready(function() {
         ];
     
         // Show/hide pagination containers based on the active content
+        console.log("paginationIndex:",paginationIndex)
         for (let i = 0; i < paginations.length; i++) {
             if (i === paginationIndex) {
                 $(paginations[i]).removeClass('d-none');
@@ -204,20 +153,23 @@ $(document).ready(function() {
         if(window.globalConfig.source == 'customer_linking'){
             $.ajax({
                 type: "GET",
-                url: window.envConfig.zyler_base_url+'/api/sales/get_sales_rep',
+                url: 'https://api.zylererp.com/api/sales/get_sales_rep',
                 headers: {
                     "Content-Type": "application/json",
-                    "Authorization": window.envConfig.zyler_bearer_token  // or any other MIME type you want to set
+                    "Authorization": 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjo0MywicGhwc2VydmVyIjoiZ3JlZW5qZWV2YS56eWxlcmVycC5jb20iLCJpYXQiOjE3MDQ3ODgwMjV9.FKaT3Ku1Y4hSCnYHZaqRFhI9LxvJvKBO9tLWtPqbvu0'  // or any other MIME type you want to set
                 }
             }).done(function (response) {
-                let optionsHTML = '<option value="" selected>Select an option</option>';
+                console.log(response.data)
+                let optionsHTML = ''
                 response.data.map((data) => {
                     optionsHTML += `<option value="`+data.staffid+`">${data.alias_name}</option>`
                 })
+                console.log(optionsHTML)
                 $(customElement.shadowRoot.querySelectorAll('.staff_select')).each(function() {
+                    console.log(this)
+                    console.log('hiii please work')
                     $(this).html(optionsHTML);
                 });                
-                $(customElement.shadowRoot.querySelectorAll('.staff_select')).select2();
             })
         }
 
@@ -237,15 +189,6 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelector('#find-btn')).removeClass('d-none')
                 $(customElement.shadowRoot.querySelector('#find-btn')).addClass('active')
                 $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', false)
-                
-                customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_company_count');
-                customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_company_count');
-                customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_company_count');
-                //$(customElement.shadowRoot.querySelector('#pageSelect1')).val(1);
-      
-                current_page=1;
-    
-                getCompanies();
             } else if($(customElement.shadowRoot.querySelector('#review_prospects_content')).hasClass('active')) {
                 $(customElement.shadowRoot.querySelector('#people_count')).removeClass('d-none')
                 $(customElement.shadowRoot.querySelector('#review_count')).addClass('d-none')
@@ -256,15 +199,14 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelector('#add-to-lead-btn')).addClass('d-none')
                 $(customElement.shadowRoot.querySelector('#find_people_content')).addClass('active')
                 $(customElement.shadowRoot.querySelector('#review_prospects_content')).removeClass('active')
-                
-                customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
-                customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
-                customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
-                current_page=1;
-                getPeople(selectedDomains);
-               
-                
-            } 
+                // $(customElement.shadowRoot.querySelector('#review-prospects-btn')).addClass('active')
+                // $(customElement.shadowRoot.querySelector('#review-prospects-btn')).prop('disabled', false)
+                // filter_data = ''
+                // selectedItems = []
+                // getPeople(selectedDomains);
+            } else {
+                getCompanies();
+            }
         })
     });
 
@@ -340,118 +282,26 @@ function removeQueryParamAndReload() {
     }
 }
 
-function extractPrimaryDomain(input) {
-    input = input.trim();
-    input = input.replace(/^\s*\d+\s+/, '').replace(/\s+\d+\s*$/, '');
-    if (input.startsWith('http://') || input.startsWith('https://')) {
-        try {
-            const urlObject = new URL(input);
-            const host = urlObject.hostname;
-            if (!host) {
-                return null;
-            }
-            return host.startsWith('www.') ? host.substring(4) : host;
-        } catch (error) {
-            return null;
-        }
-    } else if (input.startsWith('www.')) {
-        try {
-            const urlObject = new URL('http://' + input);
-            const host = urlObject.hostname;
-            return host.startsWith('www.') ? host.substring(4) : host;
-        } catch (error) {
-            return null;
-        }
-    }else {
-        const match = input.match(/^(?:www\.)?([a-zA-Z0-9-]+(\.[a-zA-Z]{2,}\.[a-zA-Z]{2,})|([a-zA-Z0-9-]+(\.[a-zA-Z]{2,}))(\/.*)?)$/);
-        if (match) {
-            const domain = match[1] || match[2];
-            return domain;
-        }
-        const cleanedInput = input.replace(/[^a-zA-Z0-9-\s\/.]/g, '');
-        return cleanedInput.trim();
-    }
-}
-
 function headSearch(event) {
-
     if (event.key == 'Enter') {
-        
-        // Handle Enter key press
-        $(customElement.shadowRoot.querySelector('#checkAllCompany')).checked = false;
-        current_page = 1;
-        $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
-        var getExtractData = extractPrimaryDomain($(customElement.shadowRoot.querySelector('#top_search')).val());
-       
-        filter_data = 'wildcard[]=' + getExtractData + '&';
-        console.log('filter_data', filter_data);
-        if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-            getPeople(selectedDomains);
-        } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
-            addToLeadNew(selectedDomains);
-        } else {
-            getCompanies();
-        }
-    } else if (event.key == 'Backspace') {
-        
-        var searchInput = $(customElement.shadowRoot.querySelector('#top_search'));
-        var searchValue = searchInput.val().trim();
-       
-        console.log('search value...',searchValue)
-        if (searchValue == '') { 
-            filter_data = ''; 
+        if ($(customElement.shadowRoot.querySelector('#top_search')).val() != '') {
+            current_page = 1
+            
+            $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
+            filter_data = 'wildcard[]=' + $(customElement.shadowRoot.querySelector('#top_search')).val() + '&'
             if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
+                console.log('People Wildcard')
                 getPeople(selectedDomains);
             } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
+                console.log('Review Wildcard')
                 addToLeadNew(selectedDomains);
             } else {
+                console.log('Company Wildcard')
                 getCompanies();
             }
-        } 
-    } 
-}
-
-
-// Function to toggle visibility of search button
-function toggleSearchButton() {
-    var searchInput = $(customElement.shadowRoot.querySelector('#top_search'));
-    var searchButton = $(customElement.shadowRoot.querySelector('#searchButton'));
-    console.log("Button:", searchButton);
-
-    if (searchInput.val().trim() !== '') {
-        searchButton.css('display', 'inline-block');
-    } else {
-        searchButton.css('display', 'none');
-    }
-}
-// Function to clear search input and hide search button
-function clearSearch() {
-    var searchInput = $(customElement.shadowRoot.querySelector('#top_search'));
-    var searchButton = $(customElement.shadowRoot.querySelector('#searchButton'));
-   
-    // Check if searchInput and searchButton are found
-    if (searchInput.length > 0 && searchButton.length > 0) {
-        // Clear the filter search
-        searchInput.val('');
-        searchButton.css('display', 'none');
-
-        // Clear the filter data
-        filter_data = ''; // Assuming filter_data is a global variable
-
-        // Call the function to re-fetch API data
-        if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-            getPeople(selectedDomains);
-        } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
-            addToLeadNew(selectedDomains);
-        } else {
-            getCompanies();
         }
-    } else {
-        console.error('Search input or search button not found.');
     }
 }
-
-
 setTimeout(() => {
     $(customElement.shadowRoot.querySelectorAll('.companies-name-filter')).on('click', function (e) {
         current_page = 1
@@ -517,17 +367,14 @@ setTimeout(() => {
         filter_data += getFilterfields('assigned_to_me', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        if(window.globalConfig.source == 'customer_linking'){
-            filter_data += getFilterfields('assigned_staff_select', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
-                return $(this).val() != "";
-            }).serialize();
-        }
+        filter_data += getFilterfields('assigned_staff_select', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() != "";
+        }).serialize();
         filter_data += getFilterfields('technologies', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
 
         $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
-        $(customElement.shadowRoot.querySelector('#top_search')).val('');
         getCompanies();
     })
 
@@ -575,13 +422,7 @@ setTimeout(() => {
         filter_data +=getFilterfields('keyword_data','class') + $('#people-filter-form').find("").filter(function(){ return $(this).val() != ""; }).serialize();
         filter_data +=getFilterfields('seniority_data','class') + $('#people-filter-form').find("").filter(function(){ return $(this).val() != ""; }).serialize();
         $('html, body').scrollTop(0);
-        if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-            getPeople(selectedDomains);
-        
-        } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
-            addToLeadNew(selectedDomains);
-        } 
-        // getPeople(selectedDomains);
+        getPeople(selectedDomains);
 
     })
 }, 1000)
@@ -589,6 +430,7 @@ setTimeout(() => {
 
 setTimeout(() => {
     $(customElement.shadowRoot.querySelectorAll('.companies-filter')).on('change', function (e) {
+
         current_page = 1
         e.preventDefault();
         let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
@@ -654,16 +496,13 @@ setTimeout(() => {
         filter_data += getFilterfields('assigned_to_me', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        if(window.globalConfig.source == 'customer_linking'){
-            filter_data += getFilterfields('assigned_staff_select', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
-                return $(this).val() != "";
-            }).serialize();
-        }
+        filter_data += getFilterfields('assigned_staff_select', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() != "";
+        }).serialize();
         filter_data += getFilterfields('technologies', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
         $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
-        $(customElement.shadowRoot.querySelector('#top_search')).val('');
         getCompanies();
 
     })
@@ -716,7 +555,6 @@ setTimeout(() => {
 }, 1000)
 
 function generatePagination(total_pages) {
-
     let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
     let total_entries;
 
@@ -728,7 +566,8 @@ function generatePagination(total_pages) {
             break;
         }
     }
-    
+
+    console.log(total_entries);
 
     if (total_pages >= 100) {
         var visible_pages = 100;
@@ -741,6 +580,11 @@ function generatePagination(total_pages) {
     let nextButtonId = 'nextButton1';
     let previousButton = customElement.shadowRoot.querySelector('#' + previousButtonId);
     let nextButton = customElement.shadowRoot.querySelector('#' + nextButtonId);
+    console.log(customElement.shadowRoot.querySelector('#previousButton1'));
+    console.log(customElement.shadowRoot.querySelector('#nextButton1'));
+
+    console.log('previousButton:', previousButton);
+    console.log('nextButton:', nextButton);
 
     if (current_page == 1) {
         previousButton.classList.add('disabled');
@@ -781,9 +625,6 @@ function generatePagination(total_pages) {
             
         }
     }
-
-
-
 }
 
 
@@ -844,46 +685,21 @@ function encryptData(data) {
     return encryptedData;
 }
 
-function sanitizeCompanyName(companyName) {
-    if (typeof companyName !== 'undefined' && companyName !== null) {
-        var sanitizedName = companyName.replace(/\s/g, '-');
-        sanitizedName = sanitizedName.replace(/'s/g, '-s');
-        sanitizedName = sanitizedName.replace(/[,'"]/g, '');
-        sanitizedName = sanitizedName.replace(/[^a-zA-Z0-9-]/g, '-');
-        sanitizedName = sanitizedName.toLowerCase();
-        return sanitizedName;
-    } else {
-        return '';
-    }
-}
-
-// For Linking Filter
-function linkFilter(fieldName,data,fieldId,collapseId) {
-    var selectElement = $(customElement.shadowRoot.querySelector('#'+fieldId));
-    var existingOption = $(selectElement).find('option[value="' + data + '"]');
-    console.log(existingOption)
-    if (existingOption.length) {
-        existingOption.remove();
-    } else {
-        var option = new Option(data, data, true, true);
-        selectElement.append(option);
-    }
-    selectElement.trigger('change');
-    $(customElement.shadowRoot.querySelector('#'+collapseId)).collapse('show');
-}
-
 
 function getCompanies() {
-   
     let total_entries;
-    let element = customElement.shadowRoot.querySelector("#entries-select-1");
-    
-    total_entries = $(element).val();
+    let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
+    for (let selector of entries_selector) {
+        let element = customElement.shadowRoot.querySelector(selector);
+
+        if (element) {
+            total_entries = $(element).val();
+            break;
+        }
+    }
 
     // Default to 10 if no matching element is found
     total_entries = total_entries || 10;
-
-    localStorage.setItem('total_company_count', total_entries);
 
     $(customElement.shadowRoot.querySelector('#loader')).fadeIn();
     if(fieldName == ""){
@@ -896,7 +712,14 @@ function getCompanies() {
     }else {
         var sort_order = sortOrder;
     }
- 
+
+    // let params = new URLSearchParams(filter_data);
+    // console.log(params)
+    // console.log(params.get('company_name[]'))
+
+
+    console.log(filter_data)
+
     $.ajax({
         type: "POST",
         url: window.envConfig.masterapi_url +  "/ajax_companies_listing",
@@ -917,8 +740,7 @@ function getCompanies() {
         }
     }).done(function (response) {
         if (response.fetched_count == 0){
-            var nodatafound = '<tr><td colspan="13" class="text-center p-3">No results found</td></tr>';
-           
+            var nodatafound = 'No results found';
         }
         let table = '';
         var itr=0;
@@ -943,11 +765,11 @@ function getCompanies() {
 
             const org = data.organization;
             table += '<tr class="accordion-header collapsed  accordion-item" id="flush-headingOne' + key + '" >\n' +
-              '<td>' + 
+              '<td>' + (org.assigned_to_me == 1 ?
           '<div class="form-group form-check">'+
-          (window.globalConfig.source == 'customer_linking' ? (data.organization.account_owner == '' ? '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">' : '') : (org.assigned_to_me == 1 ? '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">' : ''))
+          (window.globalConfig.source == 'customer_linking' ? data.organization.account_owner == '' ? '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">' : '' : '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">')
           +
-          '</div>'+'</td>\n'+
+          '</div>': '')+'</td>\n'+
                 '                        <td class="person-details d-flex align-items-center">\n'+
                 '                            <div class="profile-image">\n' +
                 '                                <a href="#">\n' +
@@ -955,57 +777,61 @@ function getCompanies() {
                 '                                </a>\n' +
                 '                            </div>\n' +
                 '                            <div class="profile-caption">\n' +
-                '                                <a href="https://nexus-data.io/dictionary/details/companies/'+data.organization.primary_domain+'/'+sanitizeCompanyName(data.organization.name)+'" target="_blank">\n' +
-                '                                    <h3 data-bs-toggle="tooltip" title="' + data.organization.name + '">' + data.organization.name + '</h3>\n' +
+                '                                <a href="#">\n' +
+                '                                    <h3 class="tooltip1">' + truncateAndAddEllipsis(data.organization.name,20) + '<span class="tooltiptext1">' + data.organization.name + '</span></h3>\n' +
                 '                                </a>\n' +
                 '                                <ul class="links social-rr-icons icon-circle list-unstyled list-inline">\n' +
-                '                                    ' + (data.organization.website_url == undefined || data.organization.website_url == null || data.organization.website_url == '' ? '': '<li class="website-url" title="Website">\n' +
+                '                                    ' + (data.organization.website_url == undefined || data.organization.website_url == null || data.organization.website_url == '' ? '': '<li class="website-url tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.organization.website_url + '">\n' +
                     '                                           <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.organization.linkedin_url == undefined || data.organization.linkedin_url == null || data.organization.linkedin_url == '' ? '': '<li class="linkedin" title="Linked In">\n' +
+                    '                                        </a> <span class="tooltiptext1">' + "Website" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.organization.linkedin_url == undefined || data.organization.linkedin_url == null || data.organization.linkedin_url == '' ? '': '<li class="linkedin tooltip1" >\n' +
                     '                                        <a target="_blank" href="' + data.organization.linkedin_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.organization.facebook_url == undefined || data.organization.facebook_url == null || data.organization.facebook_url == '' ? '': '<li class="facebook" title="Facebook In">\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Linked In" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.organization.facebook_url == undefined || data.organization.facebook_url == null || data.organization.facebook_url == '' ? '': '<li class="facebook  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.organization.facebook_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.organization.twitter_url == undefined || data.organization.twitter_url == null || data.organization.twitter_url == '' ? '': '<li class="twitter" title="Twitter In">\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Facebook" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.organization.twitter_url == undefined || data.organization.twitter_url == null || data.organization.twitter_url == '' ? '': '<li class="twitter  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.organization.twitter_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>\n' +
-                    '                                        </a>\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Twitter" + '</span>\n' +
                     '                                    </li>\n') + '\n' +
                 '                                </ul>\n' +
                 '                            </div>\n' +
                 '                        </td>\n' +
                 '                        <td>\n' +
-                '                            <a data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.industry+'\', \'industry_suggest_list\', \'collapse5\')" title="' + data.organization.industry + '">' + (data.organization.industry == null ? "N/A" : data.organization.industry) + '</a>\n' +
+                '                            <span  class="tooltip1">' + truncateAndAddEllipsis(data.organization.industry,20) + '<span class="tooltiptext1">' + data.organization.industry + '</span></span>\n' +
                 '                        </td>\n' +
                 '                        <td>\n' +
-                '                            <span data-bs-toggle="tooltip" onclick="linkFilter(\'Keyword Type\', \''+data.organization.merged_keywords+'\', \'keyword_suggest_list\', \'collapse7\')" title="' + data.organization.merged_keywords + '">' + data.organization.merged_keywords + '</span>\n' +
+                '                            <span class="tooltip1">' + truncateAndAddEllipsis(data.organization.merged_keywords,20) + '<span class="tooltiptext1">' + data.organization.merged_keywords + '</span></span>\n' +
                 '                        </td>\n' +
-                '                        <td class="location"><span data-bs-toggle="tooltip" onclick="linkFilter(\'City \', \''+data.organization.company_location+'\', \'company_city_suggest_list\', \'collapse4\')" title="' +data.organization.company_location+'">' +data.organization.company_location+'</span></td>\n' +
-                '                        <td class="company_type"><span data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.company_type+'\', \'company_type_suggest_list\', \'collapse20\')" title="' +data.organization.company_type+'">' +data.organization.company_type+'</span></td>\n' +
+                '                        <td class="location">\n' +
+                '                           <span class="tooltip1">' + truncateAndAddEllipsis(data.organization.company_location,20) + '<span class="tooltiptext1">' + data.organization.company_location + '</span></span></td>\n' +
+                '                        <td class="company_type">\n' +
+                '                           <span class="tooltip1">' + truncateAndAddEllipsis(data.organization.company_type,20) + '<span class="tooltiptext1">' + data.organization.company_type + '</span></span></td>\n' +
                 '                        <td class="EmployeeSize">\n' +
-                '                            <span onclick="linkFilter(\'People Count \', \''+data.organization.people_count_printed+'\', \'people_count_suggest_list\', \'collapse9\')">' + data.organization.people_count_printed + '</span>\n' +
+                '                            <span>' + data.organization.people_count_printed + '</span>\n' +
                 '                        </td>\n' +
                 '                        <td class="IngredientCount">\n' +
-                '                        <span onclick="linkFilter(\'People Count \', \''+data.organization.ingredient_count_printed+'\', \'ingredient_count_suggest_list\', \'collapse26\')">' + data.organization.ingredient_count_printed + '</span> \n' +
+                '                        ' + data.organization.ingredient_count_printed + ' \n' +
                 '                        </td>\n' +
                 '                        <td class="productcount">\n' +
-                '                            <span onclick="linkFilter(\'Product Count \', \''+data.organization.product_count_printed+'\', \'product_count_suggest_list\', \'collapse10\')">' + data.organization.product_count_printed + '</span>\n' +
+                '                            <span>' + data.organization.product_count_printed + '</span>\n' +
                 '                        </td>\n' +
                 '                        <td class="companyRevenue">\n' +
                 '                            <div class="metric-value">$' + data.organization.annual_revenue_printed + '</div>\n' +
                 '                        </td>\n' +
                 (window.globalConfig.source == 'customer_linking' ? '                        <td class="account_owner">\n' +
                 '                            <span>' + data.organization.account_owner + '</span>\n' +
-                '                        </td>\n' : '')+
+                '                        </td>\n' : '')
                 '                        <td class="lastupdated">\n' +
                 '                            <div class="metric-value">' + data.organization.last_update + '</div>\n' +
                 '                        </td>\n' +
-                
+                '<td class="action-arrow" id="deptchart_keypeople"  >' +
+                '</div>' +
+                '</td>' +
                 '                    </tr>\n' +
 
 
@@ -1013,12 +839,14 @@ function getCompanies() {
         })
         $(customElement.shadowRoot.querySelector('#loader')).fadeOut();
         $(customElement.shadowRoot.querySelector('#companies-data-table')).html(table);
-        $(customElement.shadowRoot.querySelector('#companies-data-table')).html(nodatafound);
+        $(customElement.shadowRoot.querySelector('#companies-data-table')).text(nodatafound);
         $(customElement.shadowRoot.querySelector('#totalCountCompanies')).removeClass('d-none');
+        console.log("total company count:", response.total_count)
         var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
         if (checkAllCheckbox.checked===true) {
             // checkAllCheckbox.checked = allChecked;
             let selectCompanyCount = JSON.parse(localStorage.getItem('dataPrimaryDomain')) || [];
+            console.log("selected_comp:", selectCompanyCount.length)
         }
         if (response.fetched_count == response.total_count) {
             $(customElement.shadowRoot.querySelector('#totalCountCompanies')).text(response.fetched_count.toLocaleString());
@@ -1033,6 +861,14 @@ function getCompanies() {
         CheckSavedPrimaryDomain();
 
     })
+}
+
+function truncateAndAddEllipsis(sentence, maxLength) {
+    if (sentence.length > maxLength) {
+        return sentence.substring(0, maxLength - 3) + '...';
+    } else {
+        return sentence;
+    }
 }
 
 function searchList($id, $FilterClass) {
@@ -1088,9 +924,6 @@ function saveDataPrimaryDomain() {
     let dataPrimaryDomain = JSON.parse(localStorage.getItem('dataPrimaryDomain')) || [];
     let dataOrganization = JSON.parse(localStorage.getItem('dataOrganization')) || [];
 
-
-
-   
     checkboxes.forEach(checkbox => {
         const dataPrimaryDomainValue = checkbox.getAttribute('data-primary-domain');
         if (checkbox.checked && !dataPrimaryDomain.includes(dataPrimaryDomainValue)) {
@@ -1120,9 +953,6 @@ function saveDataPrimaryDomain() {
     // Save the data to localStorage
     localStorage.setItem('dataPrimaryDomain', JSON.stringify(dataPrimaryDomain));
     localStorage.setItem('dataOrganization', JSON.stringify(dataOrganization));
-
-   
-    $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
 }
 
 
@@ -1135,7 +965,7 @@ function saveDataLinkedinUrl() {
         const dataLinkedinUrlValue = checkbox.getAttribute('data-linkedin-url');
 
         // Check if the LinkedIn URL is already in the array
-        const existingEntryIndex = dataLinkedinUrl.findIndex(entry => entry.linkedin === dataLinkedinUrlValue);
+        const existingEntryIndex = dataLinkedinUrl.findIndex(entry => entry.linkedin_url === dataLinkedinUrlValue);
 
         if (checkbox.checked) {
             // If not in the array, add a new entry
@@ -1172,7 +1002,6 @@ function saveDataLinkedinUrl() {
 
     // Save the data to localStorage
     localStorage.setItem('dataLinkedinUrl', JSON.stringify(dataLinkedinUrl));
-   $(customElement.shadowRoot.querySelector('#selected_people_total')).text(JSON.parse(localStorage.getItem('dataLinkedinUrl')).length);
 }
 
 function clearLocalStorageOnUnload() {
@@ -1185,7 +1014,6 @@ function clearLocalStorageOnUnload() {
 window.onbeforeunload = clearLocalStorageOnUnload;
 
 function CheckSavedPrimaryDomain() {
-    
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
     const savedDataPrimaryDomain = JSON.parse(localStorage.getItem('dataPrimaryDomain')) || [];
 
@@ -1195,8 +1023,6 @@ function CheckSavedPrimaryDomain() {
             checkbox.checked = true;
         }
     });
-
-
 
     // Push the entire saved data from localStorage into selectedDomains
     selectedDomains.push(...savedDataPrimaryDomain);
@@ -1264,13 +1090,12 @@ function retrieveDataLinkedinUrl() {
 // Update checkboxes from localStorage when the page loads
 window.addEventListener('load', retrieveDataPrimaryDomain);
 function handleCheckboxChange() {
-    
     saveDataPrimaryDomain();
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
-    
+
     // Check if every checkbox in the NodeList is checked
     var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
-   
+
     // Get the 'checkAllCompany' checkbox
     var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
 
@@ -1289,13 +1114,16 @@ function handleCheckboxChange() {
     findPeopleBtn.disabled = !isAnyChecked;
     if(isAnyChecked){
         $(customElement.shadowRoot.querySelector('#find-btn')).addClass('active')
+        // $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', false)
     } else {
         $(customElement.shadowRoot.querySelector('#find-btn')).removeClass('active')
+        // $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', true)
     }
     }
- 
+    // const find_btn = $(customElement.shadowRoot.querySelector('#find-btn')).hasClass('active')
+    // const backBtn = $(customElement.shadowRoot.querySelector('#back-btn'))
 }
-
+//  window.addEventListener('load', retrieveDataLinkedinUrl);
 
 function ReviewCheckboxChange() {
     saveDataLinkedinUrl()
@@ -1335,13 +1163,20 @@ function reviewProspects(){
 }
 
 function addToLeadNew(selectedDomains){
+    let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
+    let total_entries;
 
-    let element = customElement.shadowRoot.querySelector("#entries-select-2");
-    total_entries = $(element).val();
-    
+    for (let selector of entries_selector) {
+        let element = customElement.shadowRoot.querySelector(selector);
+
+        if (element) {
+            total_entries = $(element).val();
+            break;
+        }
+    }
+
     // Default to 10 if no matching element is found
     total_entries = total_entries || 10;
-    localStorage.setItem('total_prospect_count', total_entries);
 
     $(customElement.shadowRoot.querySelector('#loader')).fadeIn();
     if(fieldName == ""){
@@ -1375,8 +1210,9 @@ function addToLeadNew(selectedDomains){
     }).done(function (response) {
             let table = '';
             if (response.fetched_count == 0){
-                var nodatafound = '<tr><td colspan="8" class="text-center p-3">No results found</td></tr>';
+                var nodatafound = 'No results found';
             }
+            console.log("response:",response)
             $.each(response.items, function (key, data) {
             table += '<tr class="accordion-header collapsed  accordion-item"  id="flush-heading' + key + '" >\n' +
                 '                        <td class="person-details d-flex align-items-center">\n' +
@@ -1393,16 +1229,16 @@ function addToLeadNew(selectedDomains){
                 '                            <div class="profile-caption">\n' +
                 '                                <h3 data-bs-toggle="tooltip" title="' + data.person.name + '">'+data.person.name+'</h3>\n' +
                 '                                <ul class="links social-rr-icons icon-circle list-unstyled list-inline">\n' +
-                '                                    ' + (data.person.linkedin_url == undefined || data.person.linkedin_url == null || data.person.linkedin_url == '' ? '': '<li class="linkedin" title="Linked In">\n' +
+                '                                    ' + (data.person.linkedin_url == undefined || data.person.linkedin_url == null || data.person.linkedin_url == '' ? '': '<li class="linkedin  tooltip1" >\n' +
                     '                                        <a target="_blank" href="' + data.person.linkedin_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>\n' +
-                    '                                        </a>\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Linked In" + '</span>\n' +
                     '                                    </li>\n') + '\n' +
                 '                                </ul>\n' +
                 '                            </div>\n' +
                 '                        </td>\n' +
                 //'                        <td class="email"><span data-bs-toggle="tooltip" title="' +data.person.email+'">' +data.person.email+'</span></td>\n' +
-                '                        <td> <a href="#" data-bs-toggle="tooltip" data-bs-title="'+data.person.title+'">'+data.person.title+'</a> </td>\n' +
+                '                        <td> <a href="#" class="tooltip1">' + truncateAndAddEllipsis(data.person.title,20) + '<span class="tooltiptext1">' +data.person.title + '</span></a> </td>\n' +
                 '\n' +
                 '                        <td class="person-details d-flex align-items-center">\n' +
                 '                            <div class="profile-image">\n' +
@@ -1418,30 +1254,30 @@ function addToLeadNew(selectedDomains){
                 '                            </div>\n' +
                 '                            <div class="profile-caption">\n' +
                 '                                <a href="#">\n' +
-                '                                    <h3 class="text-truncate" data-bs-toggle="tooltip" title="' + data.person.organization.name + '">' + data.person.organization.name + '</h3>\n' +
+                '                                    <h3 class="text-truncate" data-bs-toggle="tooltip">' + data.person.organization.name + '</h3>\n' +
                 '                                </a>\n' +
                 '                                <ul class="links social-rr-icons icon-circle list-unstyled list-inline">\n' +
-                '                                    ' + (data.person.organization.website_url == undefined || data.person.organization.website_url == null || data.person.organization.website_url == '' ? '': '<li class="website-url" title="Website">\n' +
+                '                                    ' + (data.person.organization.website_url == undefined || data.person.organization.website_url == null || data.person.organization.website_url == '' ? '': '<li class="website-url  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.organization.website_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.person.organization.linkedin_url == undefined || data.person.organization.linkedin_url == null || data.person.organization.linkedin_url == '' ? '': '<li class="linkedin" title="Linked In">\n' +
+                    '                                        </a> <span class="tooltiptext1">' + "Website" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.person.organization.linkedin_url == undefined || data.person.organization.linkedin_url == null || data.person.organization.linkedin_url == '' ? '': '<li class="linkedin  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.organization.linkedin_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.person.organization.facebook_url == undefined || data.person.organization.facebook_url == null || data.person.organization.facebook_url == '' ? '': '<li class="facebook" title="Facebook In">\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Linked In" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.person.organization.facebook_url == undefined || data.person.organization.facebook_url == null || data.person.organization.facebook_url == '' ? '': '<li class="facebook  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.organization.facebook_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.person.organization.twitter_url == undefined || data.person.organization.twitter_url == null || data.person.organization.twitter_url == '' ? '': '<li class="twitter" title="Twitter In">\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Facebook" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.person.organization.twitter_url == undefined || data.person.organization.twitter_url == null || data.person.organization.twitter_url == '' ? '': '<li class="twitter  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.organization.twitter_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>\n' +
-                    '                                        </a>\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Twitter" + '</span>\n' +
                     '                                    </li>\n') + '\n' +
                 '                                </ul>\n' +
                 '                            </div>\n' +
                 '                        </td>\n' +
-                '                        <td class="company_type"><span data-bs-toggle="tooltip" title="' +data.person.organization.company_type+'">' +data.person.organization.company_type+'</span></td>\n' +
+                '                        <td class="company_type"><span class="tooltip1">' + truncateAndAddEllipsis(data.person.organization.company_type,20) + '<span class="tooltiptext1">' + data.person.organization.company_type + '</span></span></td>\n' +
                 '<td class="location">' +
                 ((data.person.state == null || data.person.state == undefined || data.person.state == '') && (data.person.city == null || data.person.city == undefined || data.person.city == '') && (data.person.country == null || data.person.country == undefined || data.person.country == '') ?
                     'N/A' :
@@ -1459,8 +1295,8 @@ function addToLeadNew(selectedDomains){
                                             data.person.city + ',' + data.person.country :
                                             data.person.country))))))) +
                 '</td>\n' +
-                '                        <td><span data-bs-toggle="tooltip" title="'+data.person.organization.industry+'">'+data.person.organization.industry+'</span></td>\n' +
-                '                        <td><span data-bs-toggle="tooltip" title="'+data.person.organization.keywords+'">'+data.person.organization.keywords+'</span></td>\n' +
+                '                        <td><span class="tooltip1">' + truncateAndAddEllipsis(data.person.organization.industry,20) + '<span class="tooltiptext1">' + data.person.organization.industry + '</span></span></td>\n' +
+                '                        <td><span class="tooltip1">' + truncateAndAddEllipsis(data.person.organization.keywords,20) + '<span class="tooltiptext1">' + data.person.organization.keywords + '</span></span></td>\n' +
                 '<td class="action-arrow"  >' +
                 '</div>' +
                 '</td>' +
@@ -1469,8 +1305,10 @@ function addToLeadNew(selectedDomains){
             })
             $(customElement.shadowRoot.querySelector('#loader')).fadeOut();
         $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).html(table);
-        $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).html(nodatafound);
+        $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).text(nodatafound);
         $(customElement.shadowRoot.querySelector('#totalCountReview')).removeClass('d-none');
+        console.log("response.fetchedData :", response.fetched_count)
+        console.log("response.fetchedData :", response.total_count)
         if(response.fetched_count !== response.total_count){
             $(customElement.shadowRoot.querySelector('#totalCountReview')).text(response.fetched_count.toLocaleString());
         } else{
@@ -1481,7 +1319,13 @@ function addToLeadNew(selectedDomains){
         checkSavedLinkedinUrl()
         })
 }
-
+function truncateAndAddEllipsis(sentence, maxLength) {
+    if (sentence.length > maxLength) {
+        return sentence.substring(0, maxLength - 3) + '...';
+    } else {
+        return sentence;
+    }
+}
 $(document).on('ajaxComplete', (event) => {
     updateCheckAllCheckbox()
     // setTimeout(() => {
@@ -1490,9 +1334,6 @@ $(document).on('ajaxComplete', (event) => {
     const findPeopleBtn = customElement.shadowRoot.querySelector('#find-btn');
     if(findPeopleBtn){
         findPeopleBtn.addEventListener('click', function() {
-            customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
-            customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
-            customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
             // $(customElement.shadowRoot.querySelector('#find-btn'))
             $(customElement.shadowRoot.querySelector('#paginationContainer1')).addClass('d-none')
             $(customElement.shadowRoot.querySelector('#paginationContainer2')).removeClass('d-none')
@@ -1542,8 +1383,8 @@ $(document).on('ajaxComplete', (event) => {
                                 };
                             }
                         },
-                        // dropdownParent: selectElement.parent(),
-                        // minimumInputLength: 1,
+                        dropdownParent: selectElement.parent(),
+                        minimumInputLength: 1,
                         multiple: true,
                         width: '100%'
                     });
@@ -1555,9 +1396,6 @@ $(document).on('ajaxComplete', (event) => {
     }
 
     $(customElement.shadowRoot.querySelectorAll('#review-prospects-btn')).on('click', function() {
-        customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_prospect_count');
-        customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_prospect_count');
-        customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_prospect_count');
         selectedItems = JSON.parse(localStorage.getItem('dataLinkedinUrl'))
         current_page = 1
         reviewProspects();
@@ -1583,7 +1421,9 @@ $(document).on('ajaxComplete', (event) => {
             person.password = '12345'
             data.push(person)
         }
+        console.log(data)
         data = Array.from(new Set(data));
+        console.log(data)
         $.ajax({
             type: "POST",
             url: 'http://3.16.184.89:5004/add_user_contacts',
@@ -1613,6 +1453,7 @@ $(document).on('ajaxComplete', (event) => {
                 "x-api-key": window.envConfig.api_key
             }
         }).done(function (dropdownOptions) {
+            console.log('dropdownOptions', dropdownOptions)
             dropdownOptions = dropdownOptions.map((group) => {
                 return {
                   value: group._id,
@@ -1710,7 +1551,9 @@ function addToLead() {
     var selectedGroupIds = $(customElement.shadowRoot.querySelector('#group_select_lead')).find('option:selected').map(function () {
         return $(this).val();
     }).get();
+    console.log('selectedItems_before',selectedItems)
     selectedItems = Array.from(new Map(selectedItems.map(item => [item['email'], item])).values());
+    console.log('selectedItems_after',selectedItems)
 
     if (selectedGroupNames.length > 0) {
 
@@ -1733,10 +1576,22 @@ function addToLead() {
                     return;
                 } else{
                     var processedItems = [];
+                    console.log('selectedItems_after_later',selectedItems)
 
                     selectedItems.map((selectedItem) => {
                         // Check if the item has already been processed
                         if (!processedItems.includes(selectedItem.linkedin)) {
+                            console.log(selectedItem)
+                            console.log({
+                                'first_name': selectedItem.first_name,
+                                'last_name': selectedItem.last_name,
+                                'email': selectedItem.email,
+                                'phone': selectedItem.phonenumber,
+                                'company_name': selectedItem.company,
+                                'group_ids': selectedGroupIds,
+                                'group_names': selectedGroupNames,
+                                'user_id': window.globalConfig.user_id
+                            })
             
                             $.ajax({
                                 type: "POST",
@@ -1755,6 +1610,8 @@ function addToLead() {
                                     "Content-Type": "application/json",
                                     "x-api-key": window.envConfig.api_key
                                 }
+                            }).done((response) => {
+                                console.log(response)
                             })
                             processedItems.push(selectedItem.linkedin);
                         }
@@ -1779,7 +1636,6 @@ function getSelectedOptionForLinkedInURL(linkedin_url) {
 
 function updateCheckAllCheckbox() {
     var checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
-    console.log(checkboxes)
     var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
     var allChecked = true;
 
@@ -1790,16 +1646,9 @@ function updateCheckAllCheckbox() {
             break;  // Exit the loop if at least one checkbox is not checked
         }
     }
-    if(checkboxes.length==0){
-        allChecked=false,
-        checkAllCheckbox.disabled=true;
-    }else{
-        checkAllCheckbox.disabled=false;
-    }
 
     // Set the checked property of the "Check All" checkbox
     if (checkAllCheckbox) {
-        
         checkAllCheckbox.checked = allChecked;
     }
 }
@@ -1812,12 +1661,11 @@ function updateCheckAllCheckboxPeople() {
 
     // Iterate through checkboxes to check if all are checked
     for (var i = 0; i < checkboxes.length; i++) {
-        if (!checkboxes[i].checked && !checkboxes[i].disabled) {
+        if (!checkboxes[i].checked) {
             allChecked = false;
             break;  // Exit the loop if at least one checkbox is not checked
         }
     }
-
 
     // Set the checked property of the "Check All" checkbox
     if (checkAllCheckbox) {
@@ -1830,13 +1678,20 @@ function getPeople(selectedDomains) {
     //CheckSavedPrimaryDomain()
     //updateCheckAllCheckboxPeople()
     selectedDomains = Array.from(new Set(selectedDomains));
-    let element = customElement.shadowRoot.querySelector('#entries-select-2');
-    total_entries = $(element).val();
+    let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
+    let total_entries;
 
+    for (let selector of entries_selector) {
+        let element = customElement.shadowRoot.querySelector(selector);
+
+        if (element) {
+            total_entries = $(element).val();
+            break;
+        }
+    }
 
     // Default to 10 if no matching element is found
     total_entries = total_entries || 10;
-    localStorage.setItem('total_people_count', total_entries);
 
     $(customElement.shadowRoot.querySelector('#loader')).fadeIn();
     $(customElement.shadowRoot.querySelector('#find_people_content')).addClass('active')
@@ -1845,8 +1700,6 @@ function getPeople(selectedDomains) {
     $(customElement.shadowRoot).find('#find-btn').addClass('d-none')
     $(customElement.shadowRoot.querySelector('#review-prospects-btn')).removeClass('d-none')
     const checkboxes = JSON.parse(localStorage.getItem('dataLinkedinUrl'));
-    
-   
     // totalCheckboxCount = checkboxes ? checkboxes.length : 0;
     const findReviewPrBtn = customElement.shadowRoot.querySelector('#review-prospects-btn');
     // Check if at least one checkbox is checked
@@ -1893,22 +1746,12 @@ function getPeople(selectedDomains) {
             let table = '';
 
             if (response.fetched_count == 0){
-                var nodatafound = '<tr><td colspan="8" class="text-center p-3">No results found</td></tr>';
+                var nodatafound = 'No results found';
             }
-           
             $.each(response.items, function (key, data) {
 
                 // var getcheckBoxdata = '';
                 // var checkboxTitle = '';
-                var chekedCheckbox="";
-                if(checkboxes){
-                    const matchingProfile = checkboxes.find(checkboxes => checkboxes.linkedin === data.person.linkedin_url);
-
-                    if (matchingProfile) {
-                        chekedCheckbox= 'checked';
-                    } 
-                }
-
 
                 if (data.person.checked == true) {
                     getcheckBoxdata = 'disabled';
@@ -1918,16 +1761,12 @@ function getPeople(selectedDomains) {
                     checkboxTitle = '';
                 }
 
+                console.log(data)
+
             table += '<tr class="accordion-header collapsed  accordion-item"  id="flush-heading' + key + '" >\n' +
 
-              '<td><div class="form-group form-check" data-bs-toggle="tooltip" data-placement="top" title="'+checkboxTitle+'">';
-
-
-             
-            // If not in the array, add a new entry
-            
-       
-              table+='<input type="checkbox" class="form-check-input disable people_checkbox" '+getcheckBoxdata+' data-first-name="'+data.person.first_name+'" data-last-name="'+data.person.last_name+'" data-email="'+data.person.email+'" data-phone="'+data.person.organization.phone+'" data-company_name="'+data.person.organization.name+'" data-linkedin-url="'+data.person.linkedin_url+'" data-company_country="'+data.person.organization.country+'" data-city="'+data.person.city+'" data-state="'+data.person.state+'" data-phone-number="'+data.person.phone_numbers[0]+'" data-company_website="'+data.person.organization.website_url+'" data-contact_user_phonenumber="'+data.person.phone_numbers[0]+'" data-contact_user_country="'+data.person.country+'" data-primary_domain="'+data.person.organization.primary_domain+'"  name="client_checkbox[]" value="" '+chekedCheckbox+'>'+
+              '<td><div class="form-group form-check" data-bs-toggle="tooltip" data-placement="top" title="'+checkboxTitle+'">'+
+              '<input type="checkbox" class="form-check-input disable people_checkbox" '+getcheckBoxdata+' data-first-name="'+data.person.first_name+'" data-last-name="'+data.person.last_name+'" data-email="'+data.person.email+'" data-phone="'+data.person.organization.phone+'" data-company_name="'+data.person.organization.name+'" data-linkedin-url="'+data.person.linkedin_url+'" data-company_country="'+data.person.organization.country+'" data-city="'+data.person.city+'" data-state="'+data.person.state+'" data-phone-number="'+data.person.phone_numbers[0]+'" data-company_website="'+data.person.organization.website_url+'" data-contact_user_phonenumber="'+data.person.phone_numbers[0]+'" data-contact_user_country="'+data.person.country+'" data-primary_domain="'+data.person.organization.primary_domain+'"  name="client_checkbox[]" value="">'+
               '</div></td>'+
                 '                        <td class="person-details d-flex align-items-center">\n' +
                 '                            <div class="profile-image">\n' +
@@ -1940,16 +1779,16 @@ function getPeople(selectedDomains) {
                 '                            <div class="profile-caption">\n' +
                 '                                <h3 data-bs-toggle="tooltip" title="' + data.person.name + '">'+data.person.name+'</h3>\n' +
                 '                                <ul class="links social-rr-icons icon-circle list-unstyled list-inline">\n' +
-                '                                    ' + (data.person.linkedin_url == undefined || data.person.linkedin_url == null || data.person.linkedin_url == '' ? '': '<li class="linkedin" title="Linked In">\n' +
+                '                                    ' + (data.person.linkedin_url == undefined || data.person.linkedin_url == null || data.person.linkedin_url == '' ? '': '<li class="linkedin  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.linkedin_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>\n' +
-                    '                                        </a>\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Linked In" + '</span>\n' +
                     '                                    </li>\n') + '\n' +
                 '                                </ul>\n' +
                 '                            </div>\n' +
                 '                        </td>\n' +
                 // '                        <td class="email"><span data-bs-toggle="tooltip" title="' +data.person.email+'">' +data.person.email+'</span></td>\n' +
-                '                        <td> <a href="#" data-bs-toggle="tooltip" data-bs-title="'+data.person.title+'">'+data.person.title+'</a> </td>\n' +
+                '                        <td> <a href="#" class="tooltip1"  class="tooltip1">' + truncateAndAddEllipsis(data.person.title,20) + '<span class="tooltiptext1">' +data.person.title + '</span></a> </td>\n' +
                 '\n' +
                 '                        <td class="person-details d-flex align-items-center">\n' +
                 '                            <div class="profile-image">\n' +
@@ -1964,31 +1803,31 @@ function getPeople(selectedDomains) {
                 '                                </a>\n' +
                 '                            </div>\n' +
                 '                            <div class="profile-caption">\n' +
-                '                                <a href="https://nexus-data.io/dictionary/details/companies/'+data.person.organization.primary_domain+'/'+sanitizeCompanyName(data.person.organization.name)+'" target="_blank">\n' +
+                '                                <a href="#">\n' +
                 '                                    <h3 class="text-truncate" data-bs-toggle="tooltip" title="' + data.person.organization.name + '">' + data.person.organization.name + '</h3>\n' +
                 '                                </a>\n' +
                 '                                <ul class="links social-rr-icons icon-circle list-unstyled list-inline">\n' +
-                '                                    ' + (data.person.organization.website_url == undefined || data.person.organization.website_url == null || data.person.organization.website_url == '' ? '': '<li class="website-url" title="Website">\n' +
+                '                                    ' + (data.person.organization.website_url == undefined || data.person.organization.website_url == null || data.person.organization.website_url == '' ? '': '<li class="website-url tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.organization.website_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 640 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M579.8 267.7c56.5-56.5 56.5-148 0-204.5c-50-50-128.8-56.5-186.3-15.4l-1.6 1.1c-14.4 10.3-17.7 30.3-7.4 44.6s30.3 17.7 44.6 7.4l1.6-1.1c32.1-22.9 76-19.3 103.8 8.6c31.5 31.5 31.5 82.5 0 114L422.3 334.8c-31.5 31.5-82.5 31.5-114 0c-27.9-27.9-31.5-71.8-8.6-103.8l1.1-1.6c10.3-14.4 6.9-34.4-7.4-44.6s-34.4-6.9-44.6 7.4l-1.1 1.6C206.5 251.2 213 330 263 380c56.5 56.5 148 56.5 204.5 0L579.8 267.7zM60.2 244.3c-56.5 56.5-56.5 148 0 204.5c50 50 128.8 56.5 186.3 15.4l1.6-1.1c14.4-10.3 17.7-30.3 7.4-44.6s-30.3-17.7-44.6-7.4l-1.6 1.1c-32.1 22.9-76 19.3-103.8-8.6C74 372 74 321 105.5 289.5L217.7 177.2c31.5-31.5 82.5-31.5 114 0c27.9 27.9 31.5 71.8 8.6 103.9l-1.1 1.6c-10.3 14.4-6.9 34.4 7.4 44.6s34.4 6.9 44.6-7.4l1.1-1.6C433.5 260.8 427 182 377 132c-56.5-56.5-148-56.5-204.5 0L60.2 244.3z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.person.organization.linkedin_url == undefined || data.person.organization.linkedin_url == null || data.person.organization.linkedin_url == '' ? '': '<li class="linkedin" title="Linked In">\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Website" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.person.organization.linkedin_url == undefined || data.person.organization.linkedin_url == null || data.person.organization.linkedin_url == '' ? '': '<li class="linkedin  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.organization.linkedin_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 448 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 32H31.9C14.3 32 0 46.5 0 64.3v383.4C0 465.5 14.3 480 31.9 480H416c17.6 0 32-14.5 32-32.3V64.3c0-17.8-14.4-32.3-32-32.3zM135.4 416H69V202.2h66.5V416zm-33.2-243c-21.3 0-38.5-17.3-38.5-38.5S80.9 96 102.2 96c21.2 0 38.5 17.3 38.5 38.5 0 21.3-17.2 38.5-38.5 38.5zm282.1 243h-66.4V312c0-24.8-.5-56.7-34.5-56.7-34.6 0-39.9 27-39.9 54.9V416h-66.4V202.2h63.7v29.2h.9c8.9-16.8 30.6-34.5 62.9-34.5 67.2 0 79.7 44.3 79.7 101.9V416z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.person.organization.facebook_url == undefined || data.person.organization.facebook_url == null || data.person.organization.facebook_url == '' ? '': '<li class="facebook" title="Facebook In">\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Linked In" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.person.organization.facebook_url == undefined || data.person.organization.facebook_url == null || data.person.organization.facebook_url == '' ? '': '<li class="facebook  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.organization.facebook_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M504 256C504 119 393 8 256 8S8 119 8 256c0 123.78 90.69 226.38 209.25 245V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.28c-30.8 0-40.41 19.12-40.41 38.73V256h68.78l-11 71.69h-57.78V501C413.31 482.38 504 379.78 504 256z"/></svg>\n' +
-                    '                                        </a>\n' +
-                    '                                    </li>\n') + '\n' + '' + (data.person.organization.twitter_url == undefined || data.person.organization.twitter_url == null || data.person.organization.twitter_url == '' ? '': '<li class="twitter" title="Twitter In">\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Facebook" + '</span>\n' +
+                    '                                    </li>\n') + '\n' + '' + (data.person.organization.twitter_url == undefined || data.person.organization.twitter_url == null || data.person.organization.twitter_url == '' ? '': '<li class="twitter  tooltip1">\n' +
                     '                                        <a target="_blank" href="' + data.person.organization.twitter_url + '">\n' +
                     '                                            <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M459.37 151.716c.325 4.548.325 9.097.325 13.645 0 138.72-105.583 298.558-298.558 298.558-59.452 0-114.68-17.219-161.137-47.106 8.447.974 16.568 1.299 25.34 1.299 49.055 0 94.213-16.568 130.274-44.832-46.132-.975-84.792-31.188-98.112-72.772 6.498.974 12.995 1.624 19.818 1.624 9.421 0 18.843-1.3 27.614-3.573-48.081-9.747-84.143-51.98-84.143-102.985v-1.299c13.969 7.797 30.214 12.67 47.431 13.319-28.264-18.843-46.781-51.005-46.781-87.391 0-19.492 5.197-37.36 14.294-52.954 51.655 63.675 129.3 105.258 216.365 109.807-1.624-7.797-2.599-15.918-2.599-24.04 0-57.828 46.782-104.934 104.934-104.934 30.213 0 57.502 12.67 76.67 33.137 23.715-4.548 46.456-13.32 66.599-25.34-7.798 24.366-24.366 44.833-46.132 57.827 21.117-2.273 41.584-8.122 60.426-16.243-14.292 20.791-32.161 39.308-52.628 54.253z"/></svg>\n' +
-                    '                                        </a>\n' +
+                    '                                        </a><span class="tooltiptext1">' + "Twitter" + '</span>\n' +
                     '                                    </li>\n') + '\n' +
                 '                                </ul>\n' +
                 '                            </div>\n' +
                 '                        </td>\n' +
-                '                        <td class="company_type"><span data-bs-toggle="tooltip" title="' +data.person.organization.company_type+'">' +data.person.organization.company_type+'</span></td>\n' +
+                '                        <td class="company_type"><span class="tooltip1" >' + truncateAndAddEllipsis(data.person.organization.company_type,20) + '<span class="tooltiptext1">' + data.person.organization.company_type + '</span></span></td>\n' +
 
                 '<td class="location">' +
                 ((data.person.state == null || data.person.state == undefined || data.person.state == '') && (data.person.city == null || data.person.city == undefined || data.person.city == '') && (data.person.country == null || data.person.country == undefined || data.person.country == '') ?
@@ -2007,8 +1846,8 @@ function getPeople(selectedDomains) {
                                             data.person.city + ',' + data.person.country :
                                             data.person.country))))))) +
                 '</td>\n' +
-                '                        <td><span data-bs-toggle="tooltip" title="'+data.person.organization.industry+'">'+data.person.organization.industry+'</span></td>\n' +
-                '                        <td><span data-bs-toggle="tooltip" title="'+data.person.organization.keywords+'">'+data.person.organization.keywords+'</span></td>\n' +
+                '                        <td><span class="tooltip1">' + truncateAndAddEllipsis(data.person.organization.industry,20) + '<span class="tooltiptext1">' + data.person.organization.industry + '</span></span></td>\n' +
+                '                        <td><span class="tooltip1">' + truncateAndAddEllipsis(data.person.organization.keywords,20) + '<span class="tooltiptext1">' + data.person.organization.keywords + '</span></span></td>\n' +
                 '<td class="action-arrow"  >' +
                 '</div>' +
                 '</td>' +
@@ -2017,8 +1856,10 @@ function getPeople(selectedDomains) {
             })
             $(customElement.shadowRoot.querySelector('#loader')).fadeOut();
         $(customElement.shadowRoot.querySelector('#people-data-table')).html(table);
-        $(customElement.shadowRoot.querySelector('#people-data-table')).html(nodatafound);
+        $(customElement.shadowRoot.querySelector('#people-data-table')).text(nodatafound);
         $(customElement.shadowRoot.querySelector('#totalCountPeople')).removeClass('d-none');
+        console.log("fetched_count :", response.fetched_count)
+        console.log("total_count :", response.total_count)
         if(response.fetched_count == response.total_count){
             $(customElement.shadowRoot.querySelector('#totalCountPeople')).text(response.fetched_count.toLocaleString());
         } else{
@@ -2041,28 +1882,26 @@ function getPeople(selectedDomains) {
             });
         });
         $(document).ajaxComplete(function() {
-            console.log('ajax complete')
             $(customElement.shadowRoot.querySelector(".default_companyimg")).on("error", function() {
-                console.log('error')
                 $(this).prop("src", ''+window.envConfig.base_url+'assets/img/default_company.png');
             });
         });
         $(document).ajaxComplete(function() {
             // Assuming you already have an event listener for the Check All checkbox
             const checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
-            // checkAllCheckbox.addEventListener('change', handleCheckboxChange.bind(this));
             checkAllCheckbox.addEventListener('change', function () {
-                console.log(332423432)
-                // handleCheckboxChange.bind(this)
                 // Check or uncheck all company checkboxes based on the Check All checkbox state
                 $(customElement.shadowRoot.querySelectorAll('.company_checkbox')).prop('checked', $(this).prop('checked'));
                 checkboxes.forEach(checkbox => {
                     checkbox.checked = checkAllCheckbox.checked;
                 });
 
-
-                // saveDataPrimaryDomain();
-                
+                // Call saveDataPrimaryDomain function when Check All checkbox is checked
+                if (checkAllCheckbox.checked) {
+                    saveDataPrimaryDomain();
+                }else{
+                    saveDataPrimaryDomain();
+                }
 
                 // Update the class of #find-btn based on the state of the Check All checkbox
                 const findBtn = customElement.shadowRoot.querySelector('#find-btn');
@@ -2074,7 +1913,6 @@ function getPeople(selectedDomains) {
                 } else{
                     $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', true)
                 }
-                handleCheckboxChange()
             });
 
             // Add your existing event listener for individual company checkboxes here, if needed
@@ -2092,9 +1930,11 @@ function getPeople(selectedDomains) {
                 enabledCheckboxes.forEach(checkbox => {
                     checkbox.checked = checkAllPeopleCheckbox.checked;
                 });
-               
-                saveDataLinkedinUrl();
-              
+                if (checkAllPeopleCheckbox.checked) {
+                    saveDataLinkedinUrl();
+                }else{
+                    saveDataLinkedinUrl();
+                }
                 checkedCheckboxes = JSON.parse(localStorage.getItem('dataLinkedinUrl'))
                 if(checkedCheckboxes.length > 0){
                     $(customElement.shadowRoot.querySelector('#review-prospects-btn')).prop('disabled', false);
@@ -2114,15 +1954,18 @@ function getPeople(selectedDomains) {
     });
 
     function assign_companies() {
-        console.log('assign companiessss')
         let dataOrganizationStrings = JSON.parse(localStorage.getItem('dataOrganization'));
+        console.log(dataOrganizationStrings);
         let dataOrganizations = [];
-        
+    
         if (dataOrganizationStrings && Array.isArray(dataOrganizationStrings)) {
             dataOrganizationStrings.forEach(itemString => {
+                console.log('Original itemString', itemString);
+    
+                // Replacing all single quotes with double quotes
                 let modifiedItemString = itemString.replace(/'/g, '"');
-                console.log('modifiedItemString', modifiedItemString)
-        
+                console.log('Modified itemString', modifiedItemString);
+    
                 try {
                     let itemObject = JSON.parse(modifiedItemString);
                     dataOrganizations.push(itemObject);
@@ -2131,145 +1974,33 @@ function getPeople(selectedDomains) {
                 }
             });
         }
-        $(customElement.shadowRoot.querySelector("#assign_companies")).prop("disabled", true).html('Loading...');
-        let statuses = []
-        console.log(dataOrganizations)
-        for (dataOrganization of dataOrganizations){
-            console.log(dataOrganization)
-            console.log(dataOrganization.name)
-            var settings = {
-                "url": window.envConfig.zyler_base_url+"/api/entity/user/add_new_clients",
-                "method": "POST",
-                "timeout": 0,
-                "headers": {
-                        "Content-Type": "application/json",
-                        "Authorization":  window.envConfig.zyler_bearer_token
-                },
-                "data": JSON.stringify({
-                        "staff_id": 0,
-                        "company_name": dataOrganization.name,
-                        "company_website": dataOrganization.website_url,
-                        "company_email": null,
-                        "company_phone": dataOrganization.phone,
-                        "company_country": dataOrganization.country,
-                        "company_state": dataOrganization?.state,
-                        "company_city": dataOrganization.city,
-                        "company_zip": dataOrganization.postal_code,
-                        "company_industry": [dataOrganization.industry]
-                }) 
-            };
-            $.ajax(settings).done(function (response) {
-                console.log(response)
-                if(response.status == "Added"){
-                    approval_field_name = window.envConfig.zyler_tenant + "_approval"
-                    var settings = {
-                        "url": window.envConfig.sales_automation_api_url+"/assign_unassign_staff_from_company",
-                        "method": "POST",
-                        "timeout": 0,
-                        "headers": {
-                                "Content-Type": "application/json",
-                                "x-api-key":  window.envConfig.api_key
-                        },
-                        "data": JSON.stringify({
-                            "primary_domain": dataOrganization.primary_domain,
-                            [approval_field_name]: "approved"
-                        }) 
-                    };
-                    $.ajax(settings).done(function (response) {
-                        console.log(response)
-                    });
-                }
-
-                let staff_id = $(customElement.shadowRoot.querySelector('#staff_select')).val()
-
-                if(staff_id){
-                    var assign_company_to_staff_settings = {
-                        "url": window.envConfig.zyler_base_url+"/api/entity/user/assign_company_to_staff",
-                        "method": "POST",
-                        "timeout": 0,
-                        "headers": {
-                                "Content-Type": "application/json",
-                                "Authorization":  window.envConfig.zyler_bearer_token
-                        },
-                        "data": JSON.stringify({
-                            "staff_id": staff_id,
-                            "primary_domain": dataOrganization.primary_domain
-                        })
-                    };
-                    $.ajax(assign_company_to_staff_settings).done(function (response) {
-                        console.log(response)
-                        if(response.status == 'Added'){
-                            tenant_staffids_field_name = window.envConfig.zyler_tenant + "_staff_ids"
-                            tenant_status_field_name = window.envConfig.zyler_tenant + "_status"
-                            var settings = {
-                                "url": window.envConfig.sales_automation_api_url+"/assign_unassign_staff_from_company",
-                                "method": "POST",
-                                "timeout": 0,
-                                "headers": {
-                                        "Content-Type": "application/json",
-                                        "x-api-key":  window.envConfig.api_key
-                                },
-                                "data": JSON.stringify({
-                                    "primary_domain": dataOrganization.primary_domain,
-                                    [tenant_staffids_field_name]: [parseInt(staff_id)],
-                                    [tenant_status_field_name]: 'assigned'
-                                }) 
-                            };
-                            console.log('settings', settings)
-                            $.ajax(settings).done(function (response) {
-                                console.log('response',response)
-                            });
-                        }
-                    });
-                }
-
-                console.log(response)
-            });
-        }
+    
+        console.log(dataOrganizations);
+        var settings = {
+            "url": "https://api.zylererp.com/api/entity/user/client_staff_linking",
+            "method": "POST",
+            "timeout": 0,
+            "headers": {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdGFmZmlkIjoxMzIsInBocHNlcnZlciI6ImdyZWVuamVldmEuenlsZXJlcnAuY29tIiwiaWF0IjoxNzA1NjYzNjgwfQ.NhgjmgSxXh0YzctxGplf6gONpVB9JtlCd4vVMFdIQFY"
+            },
+            "data": JSON.stringify({
+              "data": dataOrganizations,
+              "staffid": $(customElement.shadowRoot.querySelector('#staff_select')).val()
+            }),
+    };
+    
+    $.ajax(settings).done(function (response) {
+        console.log(response)
         $(customElement.shadowRoot.querySelector("#success-alert")).html('<strong>Prospect Assigned Successfully</strong> ');
-        $(customElement.shadowRoot.querySelector("#success-alert")).fadeIn();
-        setTimeout(function () {
-           $(customElement.shadowRoot.querySelector("#success-alert")).fadeOut();
-            location.reload()
-        }, 3000);
+            $(customElement.shadowRoot.querySelector("#success-alert")).fadeIn();
+            setTimeout(function () {
+                $(customElement.shadowRoot.querySelector("#success-alert")).fadeOut();
+                location.reload()
+            }, 3000);
+    });
     }
-// let count =0  ;
-
-    // $(document).ajaxComplete(function() {
-    //     $(document).on('click', 'body *', function() {
-        
-    //         var selectElement = $(customElement.shadowRoot.querySelector('#staff_select'));
-    //         if (selectElement.data('select2')) {
-    //             var isOpen = selectElement.data('select2').isOpen();
-    //             console.log('isOpen',isOpen)
-               
     
-    //             if (isOpen) {
-    //                 // If open, then close it
-    //                 // if(count==1){
-    //                     selectElement.select2('close');
-    //                 // }
-                    
-    //                 // console.log('ajax select close');
-    //             }
-    //         }
-    //     });
-    // });
-
-    // $(document).on('click', 'body *', function(event) {
-    //     // Selector for the element you want to exclude
-    //     var excludeSelector = $(customElement.shadowRoot.querySelector('#search-nav'));
-
-    //     var selectElement = $(customElement.shadowRoot.querySelector('#staff_select'));
-
-    //     // Check if the clicked element or any of its parents match the excludeSelector
-    //     // If so, return early from the function without executing the rest of the code
-    //     if ($(event.target).closest(excludeSelector).length) {
-    //         return;
-    //     }
-    
-    //     selectElement.select2('close');
-    // });
 
 
 
