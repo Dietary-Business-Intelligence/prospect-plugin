@@ -224,6 +224,7 @@ class CompaniesList extends HTMLElement {
                         <div class="next-ic">
                             <i class='bx bxs-chevron-right'></i>
                         </div>
+                        
                     </div>
                     <div class="prospects-steps-icon">
                         <div id="review_prospects_content" class="icon  text-center">
@@ -250,8 +251,12 @@ class CompaniesList extends HTMLElement {
                 </div>
                 <div class="alert alert-danger" id="error-alert" style="display: none;">
                 </div>  
+                
+                
             
-        </div>` : ``)
+        </div>
+
+` : ``)
         this.shadowRoot.innerHTML += `
         </div>
         <div class="alert alert-success" id="success-alert" style="display: none;">
@@ -259,7 +264,7 @@ class CompaniesList extends HTMLElement {
         
     </div>
 </div>
-
+                
 <div class="filter-sidebar d-none" id="people_filter_sidebar">
     <div class="filter-header">
         <div class="filter-title">
@@ -532,6 +537,7 @@ class CompaniesList extends HTMLElement {
         </span>
 <!--        <button class="btn filter-collapse"> <span class="icon-collapse_icon"></span></button>-->
     </div>
+             
     <div class="filter-item filter__slimScroll">
         <form id="companies-filter-form">
          <div class="accordion" id="filter-accordian">
@@ -915,8 +921,6 @@ class CompaniesList extends HTMLElement {
             <div class="clearfix"></div>
             <!-- quick filter end -->
             <div class="company-listing-data" id="company-listing-data">
-            
-            
             <!-- datatable start -->
             <div class="table-responsive">
                 <table class="accordion accordion-flush" id="accordionFlushExample">
@@ -984,6 +988,71 @@ class CompaniesList extends HTMLElement {
             </table>
         </div>
         </div>
+        <div class="check_domain_valid">
+                <div class="modal"  id="check_domain_valid"  tabindex="-1" role="dialog">
+                  <div class="modal-dialog check_domain_modal_dialog" role="document">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title">Modal</h5>
+                        <button type="button" style="background: #fff;font-size: 31px;border: none" class="close modal-dismis-button" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                       <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Email</th>
+                                <th scope="col">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td scope="row">manas.b@dbi360.com</td>
+                                <td>Lead Already Exists in <span class="email_already">Tapas Ranjan</span> account</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">tapas.behera@dbi360.com</td>
+                                <td>Lead Already Exists in <span class="email_already">Tapas Ranjan</span> account</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">alekhya.s@dbi360.com</td>
+                                <td>Lead Already Exists in your account</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">amlan.c@dbi360.com</td>
+                                <td>Lead Already Exists in your account</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">tanupama.deo@dbi360.com</td>
+                                <td>Lead Already Exists in your account</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">satyajit.mohanty@dbi360.com</td>
+                                <td>Lead Already Exists in your account</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">u006106@mail.vedan.com</td>
+                                <td>Lead Already Exists in <span class="email_already">Manas Baral</span> account</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">pkim@houseloan.com</td>
+                                <td>Lead Already Exists in <span class="email_already">Tapas Ranjan</span> account</td>
+                            </tr>
+                            <tr>
+                                <td scope="row">hrahma@bmmi.com.bh</td>
+                                <td>Lead Already Exists in <span class="email_already">Tapas Ranjan</span> account</td>
+                            </tr></tbody>
+                    </table>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-primary">Save changes</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
         <div id="loader" class="loader-new"><img src="`+ window.envConfig.base_url + `assets/img/Infinity-2s-86px.svg"></div>
 
         <!-- Pagination -->

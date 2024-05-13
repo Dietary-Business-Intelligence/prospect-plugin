@@ -1,6 +1,20 @@
 *{padding: 0; margin: 0; }
 /*@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@200;300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');*/
 
+/*#check_domain_valid {*/
+/*  position: fixed;*/
+/*  z-index: 99999999999999999999;*/
+/*  background: #fff;*/
+/*  top: 30%;*/
+/*  right: 30%;*/
+/*  width: 34%;*/
+/*  border: 1px solid #ccc;*/
+/*  padding: 20px;*/
+/*  box-shadow: 0px 1px 20px 12px #00000026;*/
+/*  border-radius: 5px;*/
+/*}*/
+
+
 @font-face {
   font-family:"rr-icons";
   src:url("../fonts/rr-icons.eot");
@@ -6291,3 +6305,4 @@ clip: auto;
 .total_selected_count p{
   font-size: 14px;
 }
+
