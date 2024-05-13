@@ -12,6 +12,12 @@ class CompaniesList extends HTMLElement {
             await this.render();
             this.initAccordion();
         }
+
+        $(this.shadowRoot.querySelector('.company_type_suggest')).select2({
+            placeholder: "Choose",
+            allowClear: true
+        });
+
     }
 
     // async render(config) {
@@ -854,6 +860,7 @@ class CompaniesList extends HTMLElement {
                             <Span class="d-none" id="totalCountCompanies"></Span>
                             <Span class="d-none" id="totalSelectedCountCompany"></Span>
                         </h4>
+                        <h4 class="text-md-start d-none mb-0" id="companies_selected_count">Selected Count: <span id="totalSelectedCompanyCount"><span></h4>
                         <h4 class="text-md-start d-none mb-0" id="people_count">People
                             <Span class="d-none" id="searchTitle">Total</Span>
                             <Span class="d-none" id="searchCountPeople"></Span>
@@ -870,7 +877,7 @@ class CompaniesList extends HTMLElement {
                     <div class="search-box">
                         <div class="d-flex justify-content-between">
                             <div class="input-group">
-                                <input type="text" placeholder="Search ..." id="top_search" class="form-control" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" onkeydown="headSearch(event)" oninput="toggleSearchButton()">
+                                <input type="text" placeholder="Search ..." id="top_search" class="form-control wildcard_suggest" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" onkeydown="headSearch(event)" oninput="toggleSearchButton()">
                                 <div class="input-group-append">
                                     <button id="searchButton" style="display: none;" onclick="clearSearch()" class="btn btn-outline-secondary" type="button">
                                         <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 352 512">
