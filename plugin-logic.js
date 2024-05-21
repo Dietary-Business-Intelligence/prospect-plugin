@@ -495,7 +495,8 @@ setTimeout(() => {
         var IngredientCountselectedValue = $(customElement.shadowRoot.querySelector('#ingredient_count_suggest_list')).val();
         var AssigntomeselectedValue = $(customElement.shadowRoot.querySelector('#assigned_to_me_suggest_list')).val();
         var TechnologiesselectedValue = $(customElement.shadowRoot.querySelector('#technologies_suggest_list')).val();
-        if (name == "" && CompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0 && TechnologiesselectedValue.length == 0) {
+        var StaffselectedValue = $(customElement.shadowRoot.querySelector('#assigned_staff_select_suggest_list')).val();
+        if (name == "" && CompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0 && TechnologiesselectedValue.length == 0 && StaffselectedValue.length == 0) {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).hide();
         } else {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).show();
@@ -636,8 +637,10 @@ setTimeout(() => {
         var PeopleCountselectedValue = $(customElement.shadowRoot.querySelector('#people_count_suggest_list')).val();
         var ProductCountselectedValue = $(customElement.shadowRoot.querySelector('#product_count_suggest_list')).val();
         var IngredientCountselectedValue = $(customElement.shadowRoot.querySelector('#ingredient_count_suggest_list')).val();
+        var StaffselectedValue = $(customElement.shadowRoot.querySelector('#assigned_staff_select_suggest_list')).val();
+        var TechnologiesselectedValue = $(customElement.shadowRoot.querySelector('#technologies_suggest_list')).val();
         var AssigntomeselectedValue = $(customElement.shadowRoot.querySelector('#assigned_to_me_suggest_list')).val();
-        if (name == "" && CompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0) {
+        if (name == "" && CompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0 && StaffselectedValue.length == 0 && TechnologiesselectedValue.length == 0) {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).hide();
         } else {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).show();
@@ -1006,12 +1009,20 @@ function getCompanies() {
                 var svgimg = '';
             }
 
-            let keywords_html = '';
-            for(keyword of data.organization.keywords){
-                keywords_html += '<a href="#" onclick="linkFilter(\'Keyword Type\', \''+keyword+'\', \'keyword_suggest_list\', \'collapse7\')">'+keyword+'</a>,'
-            }
-
             const org = data.organization;
+            var locationParts = org.company_location.split(',').map(part => part.trim()).filter(part => part !== "undefined");
+            var city = locationParts[0] || 'N/A';
+            var state = locationParts[1] || 'N/A';
+            var country = locationParts[2] || 'N/A';
+            var locationLinks = [
+                city !== 'N/A' ? '<a href="#" onclick="linkFilter(\'City\', \'' + city + '\', \'company_city_suggest_list\', \'collapse4\')" title="' + city + '">' + city + '</a>' : null,
+                state !== 'N/A' ? '<a href="#" onclick="linkFilter(\'State\', \'' + state + '\', \'company_state_suggest_list\', \'collapse3\')" title="' + state + '">' + state + '</a>' : null,
+                country !== 'N/A' ? '<a href="#" onclick="linkFilter(\'Country\', \'' + country + '\', \'company_country_suggest_list\', \'collapse2\')" title="' + country + '">' + country + '</a>' : null
+            ].filter(link => link !== null);
+            var allNALocations = locationLinks.every(link => link === null);
+            var locationHTML = allNALocations ? '<span data-bs-toggle="tooltip" title="N/A">N/A</span>' : '<span data-bs-toggle="tooltip" title="' + org.company_location + '">' + locationLinks.join(', ') + '</span>';
+
+
             table += '<tr class="accordion-header collapsed  accordion-item" id="flush-headingOne' + key + '" >\n' +
               '<td>' +
           '<div class="form-group form-check">'+
@@ -1052,10 +1063,12 @@ function getCompanies() {
                 '                        <td>\n' +
                 '                            <a data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.industry+'\', \'industry_suggest_list\', \'collapse5\')" title="' + data.organization.industry + '">' + (data.organization.industry == null ? "N/A" : data.organization.industry) + '</a>\n' +
                 '                        </td>\n' +
-                '                        <td>\n' +
-                '                            <span data-bs-toggle="tooltip" title="' + data.organization.merged_keywords + '">' + keywords_html + '</span>\n' +
-                '                        </td>\n' +
-                '                        <td class="location"><span data-bs-toggle="tooltip" onclick="linkFilter(\'City \', \''+data.organization.company_location+'\', \'company_city_suggest_list\', \'collapse4\')" title="' +data.organization.company_location+'">' +data.organization.company_location+'</span></td>\n' +
+                '                        <td><span data-bs-toggle="tooltip" title="' + (org.keywords && org.keywords.length > 0 ? org.keywords.join(', ') : 'N/A') + '">' +
+                (org.keywords && org.keywords.length > 0 ?
+                    org.keywords.map(keyword => '<a href="#" onclick="linkFilter(\'Keyword\', \'' + keyword + '\', \'keyword_suggest_list\', \'collapse7\')">' + keyword + '</a>').join(', ')
+                    : 'N/A') +
+                '                     </span></td>\n'+
+                '                        <td class="location">'+locationHTML+'</td>\n' +
                 '                        <td class="company_type"><span data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.company_type+'\', \'company_type_suggest_list\', \'collapse20\')" title="' +data.organization.company_type+'">' +data.organization.company_type+'</span></td>\n' +
                 '                        <td class="EmployeeSize">\n' +
                 '                            <span onclick="linkFilter(\'People Count \', \''+data.organization.people_count_printed+'\', \'people_count_suggest_list\', \'collapse9\')">' + data.organization.people_count_printed + '</span>\n' +
@@ -1160,27 +1173,28 @@ function saveDataPrimaryDomain() {
     let dataPrimaryDomain = JSON.parse(localStorage.getItem('dataPrimaryDomain')) || [];
     let dataOrganization = JSON.parse(localStorage.getItem('dataOrganization')) || [];
 
-
-
-
     checkboxes.forEach(checkbox => {
         const dataPrimaryDomainValue = checkbox.getAttribute('data-primary-domain');
-        if (checkbox.checked && !dataPrimaryDomain.includes(dataPrimaryDomainValue)) {
-            dataPrimaryDomain.push(dataPrimaryDomainValue);
-        } else if (!checkbox.checked) {
-            const index = dataPrimaryDomain.indexOf(dataPrimaryDomainValue);
-            if (index !== -1) {
-                dataPrimaryDomain.splice(index, 1);
-            }
-        }
-
         const dataOrganizationValue = checkbox.getAttribute('data-organization');
-        if (dataOrganizationValue !== null && checkbox.checked && !dataOrganization.includes(dataOrganizationValue)) {
-            dataOrganization.push(dataOrganizationValue);
+
+        if (checkbox.checked && !dataPrimaryDomain.includes(dataPrimaryDomainValue)) {
+            if (dataPrimaryDomain.length < 50) {
+                dataPrimaryDomain.push(dataPrimaryDomainValue);
+                if (dataOrganizationValue !== null && !dataOrganization.includes(dataOrganizationValue)) {
+                    dataOrganization.push(dataOrganizationValue);
+                }
+            } else {
+                // Uncheck the checkbox if we're already at the limit
+                checkbox.checked = false;
+            }
         } else if (!checkbox.checked) {
-            const index = dataOrganization.indexOf(dataOrganizationValue);
-            if (index !== -1) {
-                dataOrganization.splice(index, 1);
+            const indexPrimaryDomain = dataPrimaryDomain.indexOf(dataPrimaryDomainValue);
+            if (indexPrimaryDomain !== -1) {
+                dataPrimaryDomain.splice(indexPrimaryDomain, 1);
+            }
+            const indexOrganization = dataOrganization.indexOf(dataOrganizationValue);
+            if (indexOrganization !== -1) {
+                dataOrganization.splice(indexOrganization, 1);
             }
         }
     });
@@ -1192,12 +1206,22 @@ function saveDataPrimaryDomain() {
     // Save the data to localStorage
     localStorage.setItem('dataPrimaryDomain', JSON.stringify(dataPrimaryDomain));
     localStorage.setItem('dataOrganization', JSON.stringify(dataOrganization));
+
+    // Update the UI with the count of selected companies
     $(customElement.shadowRoot.querySelector("#companies_selected_count")).removeClass('d-none');
     $(customElement.shadowRoot.querySelector("#totalSelectedCompanyCount")).html(dataPrimaryDomain.length);
+    $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(dataPrimaryDomain.length);
 
-
-    $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
+    // Disable/Enable checkboxes based on the count
+    checkboxes.forEach(checkbox => {
+        if (!checkbox.checked && dataPrimaryDomain.length >= 50) {
+            checkbox.disabled = true;
+        } else {
+            checkbox.disabled = false;
+        }
+    });
 }
+
 
 
 
