@@ -1173,28 +1173,27 @@ function saveDataPrimaryDomain() {
     let dataPrimaryDomain = JSON.parse(localStorage.getItem('dataPrimaryDomain')) || [];
     let dataOrganization = JSON.parse(localStorage.getItem('dataOrganization')) || [];
 
+
+
+
     checkboxes.forEach(checkbox => {
         const dataPrimaryDomainValue = checkbox.getAttribute('data-primary-domain');
-        const dataOrganizationValue = checkbox.getAttribute('data-organization');
-
         if (checkbox.checked && !dataPrimaryDomain.includes(dataPrimaryDomainValue)) {
-            if (dataPrimaryDomain.length < 50) {
-                dataPrimaryDomain.push(dataPrimaryDomainValue);
-                if (dataOrganizationValue !== null && !dataOrganization.includes(dataOrganizationValue)) {
-                    dataOrganization.push(dataOrganizationValue);
-                }
-            } else {
-                // Uncheck the checkbox if we're already at the limit
-                checkbox.checked = false;
-            }
+            dataPrimaryDomain.push(dataPrimaryDomainValue);
         } else if (!checkbox.checked) {
-            const indexPrimaryDomain = dataPrimaryDomain.indexOf(dataPrimaryDomainValue);
-            if (indexPrimaryDomain !== -1) {
-                dataPrimaryDomain.splice(indexPrimaryDomain, 1);
+            const index = dataPrimaryDomain.indexOf(dataPrimaryDomainValue);
+            if (index !== -1) {
+                dataPrimaryDomain.splice(index, 1);
             }
-            const indexOrganization = dataOrganization.indexOf(dataOrganizationValue);
-            if (indexOrganization !== -1) {
-                dataOrganization.splice(indexOrganization, 1);
+        }
+
+        const dataOrganizationValue = checkbox.getAttribute('data-organization');
+        if (dataOrganizationValue !== null && checkbox.checked && !dataOrganization.includes(dataOrganizationValue)) {
+            dataOrganization.push(dataOrganizationValue);
+        } else if (!checkbox.checked) {
+            const index = dataOrganization.indexOf(dataOrganizationValue);
+            if (index !== -1) {
+                dataOrganization.splice(index, 1);
             }
         }
     });
@@ -1206,20 +1205,11 @@ function saveDataPrimaryDomain() {
     // Save the data to localStorage
     localStorage.setItem('dataPrimaryDomain', JSON.stringify(dataPrimaryDomain));
     localStorage.setItem('dataOrganization', JSON.stringify(dataOrganization));
-
-    // Update the UI with the count of selected companies
     $(customElement.shadowRoot.querySelector("#companies_selected_count")).removeClass('d-none');
     $(customElement.shadowRoot.querySelector("#totalSelectedCompanyCount")).html(dataPrimaryDomain.length);
-    $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(dataPrimaryDomain.length);
 
-    // Disable/Enable checkboxes based on the count
-    checkboxes.forEach(checkbox => {
-        if (!checkbox.checked && dataPrimaryDomain.length >= 50) {
-            checkbox.disabled = true;
-        } else {
-            checkbox.disabled = false;
-        }
-    });
+
+    $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
 }
 
 
