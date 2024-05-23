@@ -20,20 +20,20 @@ $(document).ready(function() {
     });
     if(localStorage.getItem('dataPrimaryDomain')){
         $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
-      
+
     }else{
         $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(0);
     }
     if(localStorage.getItem('dataLinkedinUrl')){
         $(customElement.shadowRoot.querySelector('#selected_people_total')).text(JSON.parse(localStorage.getItem('dataLinkedinUrl')).length);
-      
+
     }else{
         $(customElement.shadowRoot.querySelector('#selected_people_total')).text(0);
     }
 
-    
 
-    
+
+
 
     $(customElement.shadowRoot.querySelectorAll('.select2-show-search')).each(function() {
         var selectElement = $(this);  // Get a jQuery object for the select element
@@ -82,14 +82,14 @@ $(document).ready(function() {
     // $(customElement.shadowRoot.querySelector('#companies_selected')).on('click', function () {
     //     location.reload();
     // })
-    
 
-        // Pagination functionality    
+
+        // Pagination functionality
         function setupPaginationListener(selector) {
-            
+
             $(customElement.shadowRoot.querySelector(selector)).on('change', function () {
                 current_page = parseInt($(customElement.shadowRoot.querySelector(selector)).val());
-              
+
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
                     getPeople(selectedDomains);
                     // showPagination(1)
@@ -100,11 +100,11 @@ $(document).ready(function() {
                     getCompanies();
                     // showPagination(0)
                 }
-        
+
                 $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
             });
         }
-        
+
         // Set up listeners for each pagination select
         setupPaginationListener('#pageSelect1');
         setupPaginationListener('#pageSelect2');
@@ -118,17 +118,17 @@ $(document).ready(function() {
                 total_entries = $(this).val();
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
                     getPeople(selectedDomains);
-                   
+
                 } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
                     addToLeadNew(selectedDomains);
-                   
+
                 } else {
                     getCompanies();
-                    
+
                 }
             });
         }
-   
+
         setUpEntriesListener("#entries-select-1")
         setUpEntriesListener("#entries-select-2")
         setUpEntriesListener("#entries-select-3")
@@ -140,7 +140,7 @@ $(document).ready(function() {
             customElement.shadowRoot.querySelector('#paginationContainer2'),
             customElement.shadowRoot.querySelector('#paginationContainer3')
         ];
-    
+
         // Show/hide pagination containers based on the active content
         for (let i = 0; i < paginations.length; i++) {
             if (i === paginationIndex) {
@@ -149,16 +149,16 @@ $(document).ready(function() {
                 $(paginations[i]).addClass('d-none');
             }
         }
-    
+
         // Additional logic for pagination controls (e.g., generating pagination, previous, next buttons)
         generatePagination(total_pages);
         prev(paginationIndex);
         next(paginationIndex);
     }
-    
+
     // Show pagination for the initial content (index 0)
     showPagination(0);
- 
+
 
     // For company Sorting Data
     let sortElements = customElement.shadowRoot.querySelectorAll(".sort_data");
@@ -194,7 +194,7 @@ $(document).ready(function() {
                 })
                 $(customElement.shadowRoot.querySelectorAll('.staff_select')).each(function() {
                     $(this).html(optionsHTML);
-                });                
+                });
                 $(customElement.shadowRoot.querySelectorAll('.staff_select')).select2();
             })
         }
@@ -215,7 +215,7 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelector('#find-btn')).removeClass('d-none')
                 $(customElement.shadowRoot.querySelector('#find-btn')).addClass('active')
                 $(customElement.shadowRoot.querySelector('#find-btn')).prop('disabled', false)
-                
+
                 customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_company_count');
                 customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_company_count');
                 customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_company_count');
@@ -231,13 +231,13 @@ $(document).ready(function() {
                 $(customElement.shadowRoot.querySelector('#add-to-lead-btn')).addClass('d-none')
                 $(customElement.shadowRoot.querySelector('#find_people_content')).addClass('active')
                 $(customElement.shadowRoot.querySelector('#review_prospects_content')).removeClass('active')
-                
+
                 customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
                 customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
                 customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
                 getPeople(selectedDomains);
-                
-            } 
+
+            }
         })
     });
 
@@ -367,11 +367,11 @@ function headSearch(event) {
         var searchInput = $(customElement.shadowRoot.querySelector('#top_search'));
         var searchValue = searchInput.val().trim();
         console.log('search value...',searchValue)
-        if (searchValue === '') { 
-            filter_data = ''; 
+        if (searchValue === '') {
+            filter_data = '';
             getCompanies();
-        } 
-    } 
+        }
+    }
 }
 
 
@@ -414,15 +414,15 @@ setTimeout(() => {
         current_page = 1
         e.preventDefault();
         let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
-       
+
         for (let selector of entries_selector) {
             let element = customElement.shadowRoot.querySelector(selector);
-        
+
             if (element) {
                 $(element).val(total_entries);
                 break;
             }
-        }        
+        }
         // $(customElement.shadowRoot.querySelector("#entries-select-1")).val(total_entries);
         var name = $(customElement.shadowRoot.querySelector('input[name="name[]"]')).val();
         var CompanyTypeselectedValue = $(customElement.shadowRoot.querySelector('#company_type_suggest_list')).val();
@@ -496,12 +496,12 @@ setTimeout(() => {
         // $("#entries-select").val(total_entries);
         for (let selector of entries_selector) {
             let element = customElement.shadowRoot.querySelector(selector);
-        
+
             if (element) {
                 $(element).val(total_entries);
                 break;
             }
-        }        
+        }
         var name = $(customElement.shadowRoot.querySelector('input[name="people_name[]"]')).val();
         var people_title = $(customElement.shadowRoot.querySelector('#designation_suggest_list')).val();
         var people_company_type = $(customElement.shadowRoot.querySelector('#pcompany_type_suggest_list')).val();
@@ -544,15 +544,15 @@ setTimeout(() => {
         current_page = 1
         e.preventDefault();
         let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
-       
+
         for (let selector of entries_selector) {
             let element = customElement.shadowRoot.querySelector(selector);
-        
+
             if (element) {
                 $(element).val(total_entries);
                 break;
             }
-        }        
+        }
         var name = $(customElement.shadowRoot.querySelector('input[name="name[]"]')).val();
         var CompanyTypeselectedValue = $(customElement.shadowRoot.querySelector('#company_type_suggest_list')).val();
         var CompanyselectedValue = $(customElement.shadowRoot.querySelector('#company_country_suggest_list')).val();
@@ -624,15 +624,15 @@ setTimeout(() => {
         current_page = 1
         e.preventDefault();
         let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
-       
+
         for (let selector of entries_selector) {
             let element = customElement.shadowRoot.querySelector(selector);
-        
+
             if (element) {
                 $(element).val(total_entries);
                 break;
             }
-        }        
+        }
         var name = $(customElement.shadowRoot.querySelector('input[name="people_name[]"]')).val();
         var people_title = $(customElement.shadowRoot.querySelector('#designation_suggest_list')).val();
         var people_company_type = $(customElement.shadowRoot.querySelector('#pcompany_type_suggest_list')).val();
@@ -729,7 +729,7 @@ function generatePagination(total_pages) {
         let element = customElement.shadowRoot.querySelector(selector);
         if(element) {
             $(element).html(options);
-            
+
         }
     }
 }
@@ -866,7 +866,7 @@ function getCompanies() {
     }).done(function (response) {
         if (response.fetched_count == 0){
             var nodatafound = '<tr><td colspan="13" class="text-center p-3">No results found</td></tr>';
-           
+
         }
         let table = '';
         var itr=0;
@@ -891,7 +891,7 @@ function getCompanies() {
 
             const org = data.organization;
             table += '<tr class="accordion-header collapsed  accordion-item" id="flush-headingOne' + key + '" >\n' +
-              '<td>' + 
+              '<td>' +
           '<div class="form-group form-check">'+
           (window.globalConfig.source == 'customer_linking' ? (data.organization.account_owner == '' ? '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">' : '') : (org.assigned_to_me == 1 ? '<input type="checkbox" class="form-check-input company_checkbox" name="client_checkbox[]" value="" data-primary-domain="'+ data.organization.primary_domain+'" data-organization="'+JSON.stringify(data.organization).replace(/"/g, "'")+'">' : ''))
           +
@@ -953,7 +953,7 @@ function getCompanies() {
                 '                        <td class="lastupdated">\n' +
                 '                            <div class="metric-value">' + data.organization.last_update + '</div>\n' +
                 '                        </td>\n' +
-                
+
                 '                    </tr>\n' +
 
 
@@ -1038,7 +1038,7 @@ function saveDataPrimaryDomain() {
 
 
 
-   
+
     checkboxes.forEach(checkbox => {
         const dataPrimaryDomainValue = checkbox.getAttribute('data-primary-domain');
         if (checkbox.checked && !dataPrimaryDomain.includes(dataPrimaryDomainValue)) {
@@ -1069,7 +1069,7 @@ function saveDataPrimaryDomain() {
     localStorage.setItem('dataPrimaryDomain', JSON.stringify(dataPrimaryDomain));
     localStorage.setItem('dataOrganization', JSON.stringify(dataOrganization));
 
-   
+
     $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
 }
 
@@ -1101,7 +1101,7 @@ function saveDataLinkedinUrl() {
                     'company_website': checkbox.getAttribute('data-company_website'),
                     'primary_domain': checkbox.getAttribute('data-primary_domain'),
                     'email': checkbox.getAttribute('data-email'),
-                    
+
                     'contact_user_country': checkbox.getAttribute('data-contact_user_country'),
                     'contact_user_phonenumber': checkbox.getAttribute('data-contact_user_phonenumber'),
                     'state': checkbox.getAttribute('data-state'),
@@ -1133,7 +1133,7 @@ function clearLocalStorageOnUnload() {
 window.onbeforeunload = clearLocalStorageOnUnload;
 
 function CheckSavedPrimaryDomain() {
-    
+
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
     const savedDataPrimaryDomain = JSON.parse(localStorage.getItem('dataPrimaryDomain')) || [];
 
@@ -1212,13 +1212,13 @@ function retrieveDataLinkedinUrl() {
 // Update checkboxes from localStorage when the page loads
 window.addEventListener('load', retrieveDataPrimaryDomain);
 function handleCheckboxChange() {
-    
+
     saveDataPrimaryDomain();
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
-    
+
     // Check if every checkbox in the NodeList is checked
     var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
-   
+
     // Get the 'checkAllCompany' checkbox
     var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
 
@@ -1241,7 +1241,7 @@ function handleCheckboxChange() {
         $(customElement.shadowRoot.querySelector('#find-btn')).removeClass('active')
     }
     }
- 
+
 }
 
 
@@ -1286,7 +1286,7 @@ function addToLeadNew(selectedDomains){
 
     let element = customElement.shadowRoot.querySelector("#entries-select-2");
     total_entries = $(element).val();
-    
+
     // Default to 10 if no matching element is found
     total_entries = total_entries || 10;
     localStorage.setItem('total_prospect_count', total_entries);
@@ -1460,7 +1460,7 @@ $(document).on('ajaxComplete', (event) => {
                 $(customElement.shadowRoot.querySelector('#people-listing-data')).removeClass('d-none')
                 $(customElement.shadowRoot.querySelector('#people_filter_sidebar')).removeClass('d-none')
                 $(customElement.shadowRoot.querySelector('#people_count')).removeClass('d-none')
-    
+
                 $(customElement.shadowRoot.querySelectorAll('.select2-show-search')).each(function() {
                     var selectElement = $(this);
                     var isSelect2Clicked = false;
@@ -1511,7 +1511,7 @@ $(document).on('ajaxComplete', (event) => {
         reviewProspects();
         $(customElement.shadowRoot.querySelector('#people_count')).addClass('d-none')
         $(customElement.shadowRoot.querySelector('#review_count')).removeClass('d-none')
-        
+
         // $(customElement.shadowRoot.querySelector('#totalCountReviewProspects')).removeClass('d-none')
     });
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
@@ -1585,7 +1585,7 @@ $(document).on('ajaxComplete', (event) => {
             } else {
                 saveButton.disabled = true; // Disable the button
             }
-                
+
                 // const selectedValue = e.params.data.id; // Get the selected value
                 // const optionToRemove = groupSelectValue.find(`option[value="${selectedValue}"]`);
                 // if (optionToRemove.length > 0) {
@@ -1685,7 +1685,7 @@ function addToLead() {
                     selectedItems.map((selectedItem) => {
                         // Check if the item has already been processed
                         if (!processedItems.includes(selectedItem.linkedin)) {
-            
+
                             $.ajax({
                                 type: "POST",
                                 url: window.envConfig.sales_automation_api_url + "/recipient",
@@ -1707,7 +1707,7 @@ function addToLead() {
                             processedItems.push(selectedItem.linkedin);
                         }
                     });
-            
+
                     $(customElement.shadowRoot.querySelector("#success-alert")).html('<strong>Lead Added Successfully</strong> ');
                     $(customElement.shadowRoot.querySelector("#success-alert")).fadeIn();
                     setTimeout(function () {
@@ -1747,7 +1747,7 @@ function updateCheckAllCheckbox() {
 
     // Set the checked property of the "Check All" checkbox
     if (checkAllCheckbox) {
-        
+
         checkAllCheckbox.checked = allChecked;
     }
 }
@@ -1793,8 +1793,8 @@ function getPeople(selectedDomains) {
     $(customElement.shadowRoot).find('#find-btn').addClass('d-none')
     $(customElement.shadowRoot.querySelector('#review-prospects-btn')).removeClass('d-none')
     const checkboxes = JSON.parse(localStorage.getItem('dataLinkedinUrl'));
-    
-   
+
+
     // totalCheckboxCount = checkboxes ? checkboxes.length : 0;
     const findReviewPrBtn = customElement.shadowRoot.querySelector('#review-prospects-btn');
     // Check if at least one checkbox is checked
@@ -1843,7 +1843,7 @@ function getPeople(selectedDomains) {
             if (response.fetched_count == 0){
                 var nodatafound = 'No results found';
             }
-           
+
             $.each(response.items, function (key, data) {
 
                 // var getcheckBoxdata = '';
@@ -1854,7 +1854,7 @@ function getPeople(selectedDomains) {
 
                     if (matchingProfile) {
                         chekedCheckbox= 'checked';
-                    } 
+                    }
                 }
 
 
@@ -1871,10 +1871,10 @@ function getPeople(selectedDomains) {
               '<td><div class="form-group form-check" data-bs-toggle="tooltip" data-placement="top" title="'+checkboxTitle+'">';
 
 
-             
+
             // If not in the array, add a new entry
-            
-       
+
+
               table+='<input type="checkbox" class="form-check-input disable people_checkbox" '+getcheckBoxdata+' data-first-name="'+data.person.first_name+'" data-last-name="'+data.person.last_name+'" data-email="'+data.person.email+'" data-phone="'+data.person.organization.phone+'" data-company_name="'+data.person.organization.name+'" data-linkedin-url="'+data.person.linkedin_url+'" data-company_country="'+data.person.organization.country+'" data-city="'+data.person.city+'" data-state="'+data.person.state+'" data-phone-number="'+data.person.phone_numbers[0]+'" data-company_website="'+data.person.organization.website_url+'" data-contact_user_phonenumber="'+data.person.phone_numbers[0]+'" data-contact_user_country="'+data.person.country+'" data-primary_domain="'+data.person.organization.primary_domain+'"  name="client_checkbox[]" value="" '+chekedCheckbox+'>'+
               '</div></td>'+
                 '                        <td class="person-details d-flex align-items-center">\n' +
@@ -2010,7 +2010,7 @@ function getPeople(selectedDomains) {
 
 
                 // saveDataPrimaryDomain();
-                
+
 
                 // Update the class of #find-btn based on the state of the Check All checkbox
                 const findBtn = customElement.shadowRoot.querySelector('#find-btn');
@@ -2040,9 +2040,9 @@ function getPeople(selectedDomains) {
                 enabledCheckboxes.forEach(checkbox => {
                     checkbox.checked = checkAllPeopleCheckbox.checked;
                 });
-               
+
                 saveDataLinkedinUrl();
-              
+
                 checkedCheckboxes = JSON.parse(localStorage.getItem('dataLinkedinUrl'))
                 if(checkedCheckboxes.length > 0){
                     $(customElement.shadowRoot.querySelector('#review-prospects-btn')).prop('disabled', false);
@@ -2060,17 +2060,19 @@ function getPeople(selectedDomains) {
 
 
     });
-
+    $(document).ready(function() {
+        $('.js-example-basic-multiple').select2();
+    });
     function assign_companies() {
         console.log('assign companiessss')
         let dataOrganizationStrings = JSON.parse(localStorage.getItem('dataOrganization'));
         let dataOrganizations = [];
-        
+
         if (dataOrganizationStrings && Array.isArray(dataOrganizationStrings)) {
             dataOrganizationStrings.forEach(itemString => {
                 let modifiedItemString = itemString.replace(/'/g, '"');
                 console.log('modifiedItemString', modifiedItemString)
-        
+
                 try {
                     let itemObject = JSON.parse(modifiedItemString);
                     dataOrganizations.push(itemObject);
@@ -2104,7 +2106,7 @@ function getPeople(selectedDomains) {
                         "company_city": dataOrganization.city,
                         "company_zip": dataOrganization.postal_code,
                         "company_industry": [dataOrganization.industry]
-                }) 
+                })
             };
             $.ajax(settings).done(function (response) {
                 console.log(response)
@@ -2121,7 +2123,7 @@ function getPeople(selectedDomains) {
                         "data": JSON.stringify({
                             "primary_domain": dataOrganization.primary_domain,
                             [approval_field_name]: "approved"
-                        }) 
+                        })
                     };
                     $.ajax(settings).done(function (response) {
                         console.log(response)
@@ -2161,7 +2163,7 @@ function getPeople(selectedDomains) {
                                     "primary_domain": dataOrganization.primary_domain,
                                     [tenant_staffids_field_name]: [parseInt(staff_id)],
                                     [tenant_status_field_name]: 'assigned'
-                                }) 
+                                })
                             };
                             console.log('settings', settings)
                             $.ajax(settings).done(function (response) {
@@ -2182,7 +2184,7 @@ function getPeople(selectedDomains) {
                                     "primary_domain": dataOrganization.primary_domain,
                                     [tenant_staffids_field_name]: [parseInt(staff_id)],
                                     [tenant_status_field_name]: 'assigned'
-                                }) 
+                                })
                             };
                             console.log('settings', settings)
                             $.ajax(settings).done(function (response) {
@@ -2206,19 +2208,19 @@ function getPeople(selectedDomains) {
 
     // $(document).ajaxComplete(function() {
     //     $(document).on('click', 'body *', function() {
-        
+
     //         var selectElement = $(customElement.shadowRoot.querySelector('#staff_select'));
     //         if (selectElement.data('select2')) {
     //             var isOpen = selectElement.data('select2').isOpen();
     //             console.log('isOpen',isOpen)
-               
-    
+
+
     //             if (isOpen) {
     //                 // If open, then close it
     //                 // if(count==1){
     //                     selectElement.select2('close');
     //                 // }
-                    
+
     //                 // console.log('ajax select close');
     //             }
     //         }
@@ -2236,7 +2238,6 @@ function getPeople(selectedDomains) {
     //     if ($(event.target).closest(excludeSelector).length) {
     //         return;
     //     }
-    
+
     //     selectElement.select2('close');
     // });
-    

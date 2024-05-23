@@ -737,7 +737,7 @@ filter sidebar css
 }
 
 .filter-item .accordion-item .accordion-body{
-  padding: 0 15px 10px 15px;
+  padding: 10px 15px 10px 15px;
 }
 
 
@@ -770,7 +770,7 @@ filter sidebar css
 /*    color: var(--title) !important; !* over right boostrap*!*/
 /*}*/
 .filter-select-custom{
-  padding-bottom: 10px;
+  padding-bottom: 0px;
 }
 .filter-select-custom ul li span{
   float: right;

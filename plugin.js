@@ -574,13 +574,20 @@ class CompaniesList extends HTMLElement {
 
                 <div id="collapse20" class="accordion-collapse collapse " aria-labelledby="heading20"  >
                     <div class="accordion-body">
-                        <div class="filter-select-custom">
+                        <div class="filter-select-custom mb-2">
                             <select id="company_type_suggest_list" name="company_type[]" class="form-control select2-show-search form-select company_type_suggest companies-filter" data-placeholder="Choose " data-type="organization.company_type" data-endpoint="companies" data-index="index_for_company_master_new" multiple>
+
+                            </select>
+                        </div>
+                        <label for="" class="mb-1">Exclude company type</label>
+                        <div class="filter-select-custom">
+                            <select id="company_type_suggest_list2" name="company_type2[]" class="form-control select2-show-search form-select company_type_suggest companies-filter" data-placeholder="Choose " data-type="organization.company_type" data-endpoint="companies" data-index="index_for_company_master_new" multiple>
 
                             </select>
                         </div>
                     </div>
                 </div>
+
             </div>
             <div class="accordion-item">
                 <h2 class="accordion-header" >
@@ -885,7 +892,7 @@ class CompaniesList extends HTMLElement {
                             <div class="input-group">
                                 <input type="text" placeholder="Search ..." id="top_search" class="form-control wildcard_suggest" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" value="" onkeydown="headSearch(event)" oninput="toggleSearchButton()">
                                 <div class="input-group-append">
-                                    <button id="searchButton" style="display: none;" onclick="clearSearch()" class="btn btn-outline-secondary" type="button">
+                                    <button id="searchButton" style="display: none;" onclick="clearSearch()" class="btn" type="button">
                                         <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 352 512">
                                             <path fill="currentColor" d="M313.48 364.52c-9.373 9.373-24.569 9.373-33.941 0L176 229.941 71.461 334.48c-9.373 9.373-24.569 9.373-33.941 0s-9.373-24.569 0-33.941L142.059 176 37.52 71.461c-9.373-9.373-9.373-24.569 0-33.941s24.569-9.373 33.941 0L176 122.059l104.539-104.54c9.373-9.373 24.569-9.373 33.941 0s9.373 24.569 0 33.941L209.941 176l104.54 104.539c9.373 9.373 9.373 24.569 0 33.941z"/>
                                         </svg>
