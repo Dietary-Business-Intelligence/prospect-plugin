@@ -1,6 +1,7 @@
 var current_page = 1;
 var total_pages = 0;
 var filter_data = '';
+var exc_filter_data = '';
 var total_entries = 10;
 var sortOrder = "";
 var fieldName = "";
@@ -14,6 +15,48 @@ localStorage.setItem('total_company_count',10);
 localStorage.setItem('total_people_count',10);
 localStorage.setItem('total_prospect_count',10);
 $(document).ready(function() {
+    const filterConfig = [
+        { key: 'lstorage_company_type', fieldName: 'Company Type', fieldId: 'company_type_suggest_list', collapseId: 'collapse20', filterField: 'company_type' },
+        { key: 'lstorage_exc_company_type', fieldName: 'Company Type', fieldId: 'exc_company_type_suggest_list', collapseId: 'collapse20', filterField: 'exc_company_type' },
+        { key: 'lstorage_country', fieldName: 'Country', fieldId: 'company_country_suggest_list', collapseId: 'collapse2', filterField: 'company_location' },
+        { key: 'lstorage_exc_country', fieldName: 'Country', fieldId: 'exc_company_country_suggest_list', collapseId: 'collapse2', filterField: 'exc_company_location' },
+        { key: 'lstorage_state', fieldName: 'State', fieldId: 'company_state_suggest_list', collapseId: 'collapse3', filterField: 'state_company_data' },
+        { key: 'lstorage_exc_state', fieldName: 'State', fieldId: 'exc_company_state_suggest_list', collapseId: 'collapse3', filterField: 'exc_state_company_data' },
+        { key: 'lstorage_city', fieldName: 'City', fieldId: 'company_city_suggest_list', collapseId: 'collapse4', filterField: 'city_company_data' },
+        { key: 'lstorage_exc_city', fieldName: 'City', fieldId: 'exc_company_city_suggest_list', collapseId: 'collapse4', filterField: 'exc_city_company_data' },
+        { key: 'lstorage_industry', fieldName: 'Industry', fieldId: 'industry_suggest_list', collapseId: 'collapse5', filterField: 'industry' },
+        { key: 'lstorage_exc_industry', fieldName: 'Industry', fieldId: 'exc_industry_suggest_list', collapseId: 'collapse5', filterField: 'exc_industry' }
+    ];
+
+    filterConfig.forEach(config => {
+        const data = localStorage.getItem(config.key);
+        if (!isEmpty(data)) {
+            const parsedData = JSON.parse(data);
+            if (!isEmpty(parsedData)) {
+                getFilter(config.fieldName, parsedData, config.fieldId, config.collapseId);
+                filter_data += getFilterfields(config.filterField, 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+                    return $(this).val() != "";
+                }).serialize();
+            }
+        }
+    });
+
+    if(!isEmpty(localStorage.getItem('lstorage_company_name'))) {
+        $(customElement.shadowRoot.querySelector('#company_name_suggest')).val(localStorage.getItem('lstorage_company_name'))
+        $(customElement.shadowRoot.querySelector('#company_name_click')).trigger('click')
+        filter_data += getFilterfields('company_name', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() != "";
+        }).serialize();
+        $(customElement.shadowRoot.querySelector('#collapse1')).collapse('show');
+    }
+    // if(!isEmpty(localStorage.getItem('lstorage_keyword'))) {
+    //     getFilter('Keyword', JSON.parse(localStorage.getItem('lstorage_keyword')), 'keyword_suggest_list', 'collapse7')
+    //     filter_data += getFilterfields('keywords', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+    //         return $(this).val() != "";
+    //     }).serialize();
+    // }
+
+
 
     if(localStorage.getItem('dataPrimaryDomain')){
         $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
@@ -75,10 +118,9 @@ $(document).ready(function() {
             multiple: true,
             width: '100%'
         });
+
+
     })
-    // $(customElement.shadowRoot.querySelector('#companies_selected')).on('click', function () {
-    //     location.reload();
-    // })
 
 
         // Pagination functionality
@@ -293,8 +335,20 @@ sortElementspeople.forEach(function(elementpeople) {
 $(document).ready(function () {
     $(customElement.shadowRoot.querySelector("#wishlist-span")).hide();
     $(customElement.shadowRoot.querySelector("#visited-span")).hide();
-    $(customElement.shadowRoot.querySelector("#clear_all_company")).hide();
+    $(customElement.shadowRoot.querySelector("#clear_all_company")).show();
     $(customElement.shadowRoot.querySelector("#clear_all_company")).on('click', function () {
+        localStorage.removeItem('lstorage_country');
+        localStorage.removeItem('lstorage_exc_country');
+        localStorage.removeItem('lstorage_company_type');
+        localStorage.removeItem('lstorage_exc_company_type');
+        localStorage.removeItem('lstorage_keyword');
+        localStorage.removeItem('lstorage_state');
+        localStorage.removeItem('lstorage_exc_state');
+        localStorage.removeItem('lstorage_city');
+        localStorage.removeItem('lstorage_exc_city');
+        localStorage.removeItem('lstorage_industry');
+        localStorage.removeItem('lstorage_exc_industry');
+        localStorage.removeItem('lstorage_company_name');
         location.reload();
     });
     $(customElement.shadowRoot.querySelector("#clear_all_people")).hide();
@@ -484,7 +538,9 @@ setTimeout(() => {
         }
         // $(customElement.shadowRoot.querySelector("#entries-select-1")).val(total_entries);
         var name = $(customElement.shadowRoot.querySelector('input[name="name[]"]')).val();
+        localStorage.setItem('lstorage_company_name', name);
         var CompanyTypeselectedValue = $(customElement.shadowRoot.querySelector('#company_type_suggest_list')).val();
+        var ExCompanyTypeselectedValue = $(customElement.shadowRoot.querySelector('#exc_company_type_suggest_list')).val();
         var CompanyselectedValue = $(customElement.shadowRoot.querySelector('#company_country_suggest_list')).val();
         var CityselectedValue = $(customElement.shadowRoot.querySelector('#company_city_suggest_list')).val();
         var StateselectedValue = $(customElement.shadowRoot.querySelector('#company_state_suggest_list')).val();
@@ -496,7 +552,7 @@ setTimeout(() => {
         var AssigntomeselectedValue = $(customElement.shadowRoot.querySelector('#assigned_to_me_suggest_list')).val();
         var TechnologiesselectedValue = $(customElement.shadowRoot.querySelector('#technologies_suggest_list')).val();
         var StaffselectedValue = $(customElement.shadowRoot.querySelector('#assigned_staff_select_suggest_list')).val();
-        if (name == "" && CompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0 && TechnologiesselectedValue.length == 0 && StaffselectedValue.length == 0) {
+        if (name == "" && CompanyTypeselectedValue.length == 0 && ExCompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0 && TechnologiesselectedValue.length == 0 && StaffselectedValue.length == 0) {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).hide();
         } else {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).show();
@@ -515,6 +571,9 @@ setTimeout(() => {
                 return $(this).val() != "";
             }).serialize();
         }
+        exc_filter_data += getFilterfields('company_type', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() != "";
+        }).serialize();
         filter_data += getFilterfields('company_location', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
@@ -629,18 +688,34 @@ setTimeout(() => {
         }
         var name = $(customElement.shadowRoot.querySelector('input[name="name[]"]')).val();
         var CompanyTypeselectedValue = $(customElement.shadowRoot.querySelector('#company_type_suggest_list')).val();
+        localStorage.setItem('lstorage_company_type', JSON.stringify(CompanyTypeselectedValue));
+        var ExCompanyTypeselectedValue = $(customElement.shadowRoot.querySelector('#exc_company_type_suggest_list')).val();
+        localStorage.setItem('lstorage_exc_company_type', JSON.stringify(ExCompanyTypeselectedValue));
         var CompanyselectedValue = $(customElement.shadowRoot.querySelector('#company_country_suggest_list')).val();
+        localStorage.setItem('lstorage_country', JSON.stringify(CompanyselectedValue));
+        var ExCompanyselectedValue = $(customElement.shadowRoot.querySelector('#exc_company_country_suggest_list')).val();
+        localStorage.setItem('lstorage_exc_country', JSON.stringify(ExCompanyselectedValue));
         var CityselectedValue = $(customElement.shadowRoot.querySelector('#company_city_suggest_list')).val();
+        localStorage.setItem('lstorage_city', JSON.stringify(CityselectedValue));
+        var ExCityselectedValue = $(customElement.shadowRoot.querySelector('#exc_company_city_suggest_list')).val();
+        localStorage.setItem('lstorage_exc_city', JSON.stringify(ExCityselectedValue));
         var StateselectedValue = $(customElement.shadowRoot.querySelector('#company_state_suggest_list')).val();
+        localStorage.setItem('lstorage_state', JSON.stringify(StateselectedValue));
+        var ExStateselectedValue = $(customElement.shadowRoot.querySelector('#exc_company_state_suggest_list')).val();
+        localStorage.setItem('lstorage_exc_state', JSON.stringify(ExStateselectedValue));
         var IndustryselectedValue = $(customElement.shadowRoot.querySelector('#industry_suggest_list')).val();
+        localStorage.setItem('lstorage_industry', JSON.stringify(IndustryselectedValue));
+        var ExIndustryselectedValue = $(customElement.shadowRoot.querySelector('#exc_industry_suggest_list')).val();
+        localStorage.setItem('lstorage_exc_industry', JSON.stringify(ExIndustryselectedValue));
         var KeywordselectedValue = $(customElement.shadowRoot.querySelector('#keyword_suggest_list')).val();
+        localStorage.setItem('lstorage_keyword', JSON.stringify(KeywordselectedValue));
         var PeopleCountselectedValue = $(customElement.shadowRoot.querySelector('#people_count_suggest_list')).val();
         var ProductCountselectedValue = $(customElement.shadowRoot.querySelector('#product_count_suggest_list')).val();
         var IngredientCountselectedValue = $(customElement.shadowRoot.querySelector('#ingredient_count_suggest_list')).val();
         var StaffselectedValue = $(customElement.shadowRoot.querySelector('#assigned_staff_select_suggest_list')).val();
         var TechnologiesselectedValue = $(customElement.shadowRoot.querySelector('#technologies_suggest_list')).val();
         var AssigntomeselectedValue = $(customElement.shadowRoot.querySelector('#assigned_to_me_suggest_list')).val();
-        if (name == "" && CompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0 && StaffselectedValue.length == 0 && TechnologiesselectedValue.length == 0) {
+        if (name == "" && CompanyTypeselectedValue.length == 0 && ExCompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0 && StaffselectedValue.length == 0 && TechnologiesselectedValue.length == 0) {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).hide();
         } else {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).show();
@@ -665,20 +740,35 @@ setTimeout(() => {
         filter_data += getFilterfields('company_location', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
+        exc_filter_data += getFilterfields('exc_company_location', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() != "";
+        }).serialize();
         filter_data = filter_data.replace(/company_type\[\]=.*&/, '');
         filter_data += getFilterfields('company_type', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() !="";
+        }).serialize();
+        exc_filter_data += getFilterfields('exc_company_type', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() !="";
         }).serialize();
         filter_data = filter_data.replace(/state_company_data\[\]=.*&/, '');
         filter_data += getFilterfields('state_company_data', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
+        exc_filter_data += getFilterfields('exc_state_company_data', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() != "";
+        }).serialize();
         filter_data = filter_data.replace(/city_company_data\[\]=.*&/, '');
         filter_data += getFilterfields('city_company_data', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
+        exc_filter_data += getFilterfields('exc_city_company_data', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() != "";
+        }).serialize();
         filter_data = filter_data.replace(/industry\[\]=.*&/, '');
         filter_data += getFilterfields('industry', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
+            return $(this).val() != "";
+        }).serialize();
+        exc_filter_data += getFilterfields('exc_industry', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
         filter_data = filter_data.replace(/keywords\[\]=.*&/, '');
@@ -904,6 +994,39 @@ function sanitizeCompanyName(companyName) {
         return '';
     }
 }
+// get filter
+function getFilter(fieldName, data, fieldId, collapseId) {
+    var selectElement = $(customElement.shadowRoot.querySelector('#' + fieldId));
+
+    // Clear the current selection
+    selectElement.empty();
+
+    if (fieldId === 'keyword_suggest_list') {
+        // Handle the keywords case where data is a comma-separated string
+        data.split(',').forEach(ele => {
+            ele = ele.trim(); // Remove any extra spaces
+            var existingOption = selectElement.find('option[value="' + ele + '"]');
+            if (!existingOption.length) {
+                var option = new Option(ele, ele, true, true);
+                selectElement.append(option);
+            }
+        });
+    } else {
+        // Handle the general case where data can be an array or a single value
+        if (Array.isArray(data)) {
+            data.forEach(item => {
+                var option = new Option(item, item, true, true);
+                selectElement.append(option);
+            });
+        } else {
+            var option = new Option(data, data, true, true);
+            selectElement.append(option);
+        }
+    }
+
+    selectElement.trigger('change');
+    $(customElement.shadowRoot.querySelector('#' + collapseId)).collapse('show');
+}
 
 // For Linking Filter
 function linkFilter(fieldName,data,fieldId,collapseId) {
@@ -942,7 +1065,8 @@ function linkFilter(fieldName,data,fieldId,collapseId) {
 
 
 function getCompanies() {
-   console.log('getcompaniess')
+   console.log('exc_filter_data',exc_filter_data)
+   console.log('filter_data',filter_data)
     let total_entries;
     let element = customElement.shadowRoot.querySelector("#entries-select-1");
 
@@ -973,6 +1097,7 @@ function getCompanies() {
             params: {
                 'page': current_page,
                 'filters': filter_data,
+                // 'exclude_filters': exc_filter_data,
                 'length': total_entries,
                 'fieldName': field_name,
                 'sortOrder': sort_order,
@@ -1010,6 +1135,9 @@ function getCompanies() {
             }
 
             const org = data.organization;
+            if(typeof org.company_type == "string"){
+                org.company_type = org.company_type.split(',')
+            }
             var locationParts = org.company_location.split(',').map(part => part.trim()).filter(part => part !== "undefined");
             var city = locationParts[0] || 'N/A';
             var state = locationParts[1] || 'N/A';
@@ -1060,8 +1188,9 @@ function getCompanies() {
                 '                                </ul>\n' +
                 '                            </div>\n' +
                 '                        </td>\n' +
+
                 '                        <td>\n' +
-                '                            <a data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.industry+'\', \'industry_suggest_list\', \'collapse5\')" title="' + data.organization.industry + '">' + (data.organization.industry == null ? "N/A" : data.organization.industry) + '</a>\n' +
+                '                            <a data-bs-toggle="tooltip" onclick="linkFilter(\'Industry\', \''+data.organization.industry+'\', \'industry_suggest_list\', \'collapse5\')" title="' + data.organization.industry + '">' + (data.organization.industry == null ? "N/A" : data.organization.industry) + '</a>\n' +
                 '                        </td>\n' +
                 '                        <td><span data-bs-toggle="tooltip" title="' + (org.keywords && org.keywords.length > 0 ? org.keywords.join(', ') : 'N/A') + '">' +
                 (org.keywords && org.keywords.length > 0 ?
@@ -1069,7 +1198,12 @@ function getCompanies() {
                     : 'N/A') +
                 '                     </span></td>\n'+
                 '                        <td class="location">'+locationHTML+'</td>\n' +
-                '                        <td class="company_type"><span data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.company_type+'\', \'company_type_suggest_list\', \'collapse20\')" title="' +data.organization.company_type+'">' +data.organization.company_type+'</span></td>\n' +
+                '                        <td class="company_type"><span data-bs-toggle="tooltip" title="' + (org.company_type && org.company_type.length > 0 ? org.company_type.join(', ') : 'N/A') + '">' +
+                (org.company_type && org.company_type.length > 0 ?
+                    org.company_type.map(company_type => '<a href="#" onclick="linkFilter(\'Company Type\', \''+data.organization.company_type+'\', \'company_type_suggest_list\', \'collapse20\')">' + company_type + '</a>').join(', ')
+                    : 'N/A') +
+                '                     </span></td>\n'+
+                // '                        <td class="company_type"><span data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.company_type+'\', \'company_type_suggest_list\', \'collapse20\')" title="' +data.organization.company_type+'">' +data.organization.company_type+'</span></td>\n' +
                 '                        <td class="EmployeeSize">\n' +
                 '                            <span onclick="linkFilter(\'People Count \', \''+data.organization.people_count_printed+'\', \'people_count_suggest_list\', \'collapse9\')">' + data.organization.people_count_printed + '</span>\n' +
                 '                        </td>\n' +
@@ -1866,7 +2000,6 @@ function getSelectedOptionForLinkedInURL(linkedin_url) {
 
 function updateCheckAllCheckbox() {
     var checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
-    console.log(checkboxes)
     var checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
     var allChecked = true;
 
@@ -2128,7 +2261,6 @@ function getPeople(selectedDomains) {
             });
         });
         $(document).ajaxComplete(function() {
-            console.log('ajax complete')
             $(customElement.shadowRoot.querySelector(".default_companyimg")).on("error", function() {
                 console.log('error')
                 $(this).prop("src", ''+window.envConfig.base_url+'assets/img/default_company.png');
@@ -2354,6 +2486,22 @@ function getPeople(selectedDomains) {
 		 // location.reload()
         }, 3000);
     }
+
+function isEmpty(variable) {
+    if (variable == null) {
+        return true; // null or undefined
+    }
+    if (typeof variable === "string" && variable.trim() === "") {
+        return true; // empty string or string with only whitespace
+    }
+    if (Array.isArray(variable) && variable.length === 0) {
+        return true; // empty array
+    }
+    if (typeof variable === "object" && Object.keys(variable).length === 0) {
+        return true; // empty object
+    }
+    return false;
+}
 // let count =0  ;
 
     // $(document).ajaxComplete(function() {
