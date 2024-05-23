@@ -550,8 +550,8 @@ class CompaniesList extends HTMLElement {
                 <div id="collapse1" class="accordion-collapse collapse">
                     <div class="accordion-body">
                         <div class="filter-search">
-                            <input type="text" name="name[]" class="form-control company_name_suggest" placeholder="Search Company Name"/>
-                            <button class="btn btn-search companies-name-filter" type="button">
+                            <input type="text" name="name[]" class="form-control company_name_suggest" id="company_name_suggest" placeholder="Search Company Name"/>
+                            <button class="btn btn-search companies-name-filter" id="company_name_click" type="button">
                                 <svg xmlns="http://www.w3.org/2000/svg" height="1em" viewBox="0 0 512 512"><!--! Font Awesome Free 6.4.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license (Commercial License) Copyright 2023 Fonticons, Inc. --><path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/></svg>
                             </button>
                         </div>
@@ -581,7 +581,7 @@ class CompaniesList extends HTMLElement {
                         </div>
                         <label for="" class="mb-1">Exclude company type</label>
                         <div class="filter-select-custom">
-                            <select id="company_type_suggest_list2" name="company_type2[]" class="form-control select2-show-search form-select company_type_suggest companies-filter" data-placeholder="Choose " data-type="organization.company_type" data-endpoint="companies" data-index="index_for_company_master_new" multiple>
+                            <select id="exc_company_type_suggest_list" class="form-control select2-show-search form-select exc_company_type_suggest companies-filter" data-placeholder="Choose " data-type="organization.company_type" data-endpoint="companies" data-index="index_for_company_master_new" multiple>
 
                             </select>
                         </div>
@@ -610,6 +610,12 @@ class CompaniesList extends HTMLElement {
 
                             </select>
                         </div>
+                        <label for="" class="mb-1">Exclude Country</label>
+                        <div class="filter-select-custom">
+                            <select id="exc_company_country_suggest_list" class="pt-2 form-control select2-show-search form-select exc_company_location_suggest companies-filter" data-placeholder="Choose " data-type="organization.country" data-endpoint="companies" data-index="index_for_company_master_new" multiple>
+
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -625,6 +631,14 @@ class CompaniesList extends HTMLElement {
                         <div class="filter-select-custom">
                              <select id="company_state_suggest_list" name="state_data[]"
                                      class="form-control select2-show-search form-select state_company_data_suggest companies-filter"
+                                     data-placeholder="Choose " data-type="organization.state" data-endpoint="companies" data-index="index_for_company_master_new" multiple>
+                                 <!-- Add more options as needed -->
+                             </select>
+                         </div>
+                         <label for="" class="mb-1">Exclude State</label>
+                         <div class="filter-select-custom">
+                             <select id="exc_company_state_suggest_list"
+                                     class="form-control select2-show-search form-select exc_state_company_data_suggest companies-filter"
                                      data-placeholder="Choose " data-type="organization.state" data-endpoint="companies" data-index="index_for_company_master_new" multiple>
                                  <!-- Add more options as needed -->
                              </select>
@@ -653,6 +667,14 @@ class CompaniesList extends HTMLElement {
                                  <!-- Add more options as needed -->
                              </select>
                          </div>
+                         <label for="" class="mb-1">Exclude City</label>
+                         <div class="filter-select-custom">
+                             <select id="exc_company_city_suggest_list"
+                                     class="form-control select2-show-search form-select exc_city_company_data_suggest companies-filter"
+                                     data-placeholder="Choose " data-type="organization.city" data-endpoint="companies" data-index="index_for_company_master_new" multiple>
+                                 <!-- Add more options as needed -->
+                             </select>
+                         </div>
                      </div>
                  </div>
              </div>
@@ -670,6 +692,14 @@ class CompaniesList extends HTMLElement {
                          <div class="filter-select-custom">
                              <select id="industry_suggest_list" name="industry[]"
                                      class="form-control select2-show-search form-select industry_suggest companies-filter"
+                                     data-placeholder="Choose " data-type="organization.industry" data-index="index_for_company_master_new" data-endpoint="companies"  multiple>
+                                 <!-- Add more options as needed -->
+                             </select>
+                         </div>
+                         <label for="" class="mb-1">Exclude Industry</label>
+                         <div class="filter-select-custom">
+                             <select id="exc_industry_suggest_list"
+                                     class="form-control select2-show-search form-select exc_industry_suggest companies-filter"
                                      data-placeholder="Choose " data-type="organization.industry" data-index="index_for_company_master_new" data-endpoint="companies"  multiple>
                                  <!-- Add more options as needed -->
                              </select>
