@@ -9,12 +9,15 @@ let selectedDomains = [];
 let selectedItems = [];
 let dataLinkedinUrl = [];
 let go_to_review = false;
-let ignoreChangeEvents = false;
 localStorage.setItem('total_company_count',10);
 localStorage.setItem('total_people_count',10);
 localStorage.setItem('total_prospect_count',10);
 $(document).ready(function() {
-    
+
+    $(customElement.shadowRoot.querySelector('.company_type_suggest')).select2({
+        placeholder: "Choose",
+        allowClear: true // This allows a clear button to appear so users can unselect their choice.
+    });
     if(localStorage.getItem('dataPrimaryDomain')){
         $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
       
@@ -84,20 +87,16 @@ $(document).ready(function() {
         // Pagination functionality    
         function setupPaginationListener(selector) {
             
-            
             $(customElement.shadowRoot.querySelector(selector)).on('change', function () {
-               
                 current_page = parseInt($(customElement.shadowRoot.querySelector(selector)).val());
               
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-                
                     getPeople(selectedDomains);
                     // showPagination(1)
                 } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
                     // showPagination(2)
                     addToLeadNew(selectedDomains);
                 } else {
-                    
                     getCompanies();
                     // showPagination(0)
                 }
@@ -117,35 +116,13 @@ $(document).ready(function() {
                 current_page = 1;
                 $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
                 total_entries = $(this).val();
-              
                 if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-                    localStorage.setItem('total_people_count', total_entries);
-                    
-                    
-                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
-                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
-                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
                     getPeople(selectedDomains);
                    
                 } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
-                    
-                    localStorage.setItem('total_prospect_count', total_entries);
-                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_prospect_count');
-                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_prospect_count');
-                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_prospect_count');
-    
-                 
                     addToLeadNew(selectedDomains);
                    
                 } else {
-                   
-                    localStorage.setItem('total_company_count', total_entries);
-                    customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_company_count');
-                    customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_company_count');
-                    customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_company_count');
-    
-                 
-
                     getCompanies();
                     
                 }
@@ -242,10 +219,7 @@ $(document).ready(function() {
                 customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_company_count');
                 customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_company_count');
                 customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_company_count');
-                //$(customElement.shadowRoot.querySelector('#pageSelect1')).val(1);
-      
-                current_page=1;
-    
+
                 getCompanies();
             } else if($(customElement.shadowRoot.querySelector('#review_prospects_content')).hasClass('active')) {
                 $(customElement.shadowRoot.querySelector('#people_count')).removeClass('d-none')
@@ -261,9 +235,7 @@ $(document).ready(function() {
                 customElement.shadowRoot.querySelector('#entries-select-1').value = localStorage.getItem('total_people_count');
                 customElement.shadowRoot.querySelector('#entries-select-2').value = localStorage.getItem('total_people_count');
                 customElement.shadowRoot.querySelector('#entries-select-3').value = localStorage.getItem('total_people_count');
-                current_page=1;
                 getPeople(selectedDomains);
-               
                 
             } 
         })
@@ -377,16 +349,13 @@ function extractPrimaryDomain(input) {
 function headSearch(event) {
 
     if (event.key == 'Enter') {
-        
         // Handle Enter key press
         $(customElement.shadowRoot.querySelector('#checkAllCompany')).checked = false;
         current_page = 1;
         $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
         var getExtractData = extractPrimaryDomain($(customElement.shadowRoot.querySelector('#top_search')).val());
-       
-        filter_data = filter_data.replace(/wildcard\[\]=.*&/, '');
-        filter_data += 'wildcard[]=' + getExtractData + '&';
-        console.log('filter_data', filter_data);
+        console.log('getExtractData', getExtractData);
+        filter_data = 'wildcard[]=' + getExtractData + '&';
         if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
             getPeople(selectedDomains);
         } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
@@ -394,35 +363,13 @@ function headSearch(event) {
         } else {
             getCompanies();
         }
-        // ignoreChangeEvents = true;
-        // $(customElement.shadowRoot.querySelector('input[name="name[]"]')).val('')
-        // $(customElement.shadowRoot.querySelector('select[name="company_type[]"]')).val(null).trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="company_location[]"]')).val(null).trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="state_data[]"]')).val(null).trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="city_company_data[]"]')).val(null).trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="industry[]"]')).val(null).trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="keywords[]"]')).val(null).trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="technologies[]"]')).val(null).trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="people_count[]"]')).val('0-5000000').trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="product_count[]"]')).val('0-5000000').trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="ingredient_count[]"]')).val('0-5000000').trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="assigned_to_me[]')).val("0").trigger('change');
-        // $(customElement.shadowRoot.querySelector('select[name="assigned_staff_select[]')).val(null).trigger('change');
-        // ignoreChangeEvents = false;
-
     } else if (event.key == 'Backspace') {
-        
         var searchInput = $(customElement.shadowRoot.querySelector('#top_search'));
         var searchValue = searchInput.val().trim();
-        if (searchValue == '') { 
+        console.log('search value...',searchValue)
+        if (searchValue === '') { 
             filter_data = ''; 
-            if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-                getPeople(selectedDomains);
-            } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
-                addToLeadNew(selectedDomains);
-            } else {
-                getCompanies();
-            }
+            getCompanies();
         } 
     } 
 }
@@ -444,7 +391,7 @@ function toggleSearchButton() {
 function clearSearch() {
     var searchInput = $(customElement.shadowRoot.querySelector('#top_search'));
     var searchButton = $(customElement.shadowRoot.querySelector('#searchButton'));
-   
+
     // Check if searchInput and searchButton are found
     if (searchInput.length > 0 && searchButton.length > 0) {
         // Clear the filter search
@@ -455,13 +402,7 @@ function clearSearch() {
         filter_data = ''; // Assuming filter_data is a global variable
 
         // Call the function to re-fetch API data
-        if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-            getPeople(selectedDomains);
-        } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
-            addToLeadNew(selectedDomains);
-        } else {
-            getCompanies();
-        }
+        getCompanies();
     } else {
         console.error('Search input or search button not found.');
     }
@@ -500,15 +441,7 @@ setTimeout(() => {
         } else {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).show();
         }
-        let wildcardRegex = /(?:^|&)wildcard\[\]=([^&]+)/;
-
-        // Use match to find the wildcard parameter and its value
-        let wildcardMatch = filter_data.match(wildcardRegex);
-        console.log(wildcardMatch)
-        
-        // Extract the wildcard parameter and its value
-        filter_data = (wildcardMatch ? wildcardMatch[0] : '') + '&';
-        console.log(filter_data)
+        filter_data = '';
         if (name) {
             filter_data += getFilterfields('company_name', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
                 return $(this).val() != "";
@@ -517,6 +450,7 @@ setTimeout(() => {
         filter_data += getFilterfields('company_location', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
+        console.log(filter_data)
         filter_data += getFilterfields('state_company_data', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
@@ -551,7 +485,7 @@ setTimeout(() => {
         }).serialize();
 
         $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
-        // $(customElement.shadowRoot.querySelector('#top_search')).val('');
+        $(customElement.shadowRoot.querySelector('#top_search')).val('');
         getCompanies();
     })
 
@@ -599,13 +533,7 @@ setTimeout(() => {
         filter_data +=getFilterfields('keyword_data','class') + $('#people-filter-form').find("").filter(function(){ return $(this).val() != ""; }).serialize();
         filter_data +=getFilterfields('seniority_data','class') + $('#people-filter-form').find("").filter(function(){ return $(this).val() != ""; }).serialize();
         $('html, body').scrollTop(0);
-        if ($(customElement.shadowRoot.querySelector('#find_people_content')).hasClass('active')) {
-            getPeople(selectedDomains);
-        
-        } else if ($(customElement.shadowRoot.querySelector("#review_prospects_content")).hasClass('active')) {
-            addToLeadNew(selectedDomains);
-        } 
-        // getPeople(selectedDomains);
+        getPeople(selectedDomains);
 
     })
 }, 1000)
@@ -613,7 +541,6 @@ setTimeout(() => {
 
 setTimeout(() => {
     $(customElement.shadowRoot.querySelectorAll('.companies-filter')).on('change', function (e) {
-        if (!ignoreChangeEvents) {
         current_page = 1
         e.preventDefault();
         let entries_selector = ["#entries-select-1", "#entries-select-2", "#entries-select-3"];
@@ -639,67 +566,47 @@ setTimeout(() => {
         var AssigntomeselectedValue = $(customElement.shadowRoot.querySelector('#assigned_to_me_suggest_list')).val();
         if (name == "" && CompanyTypeselectedValue.length == 0 && CompanyselectedValue.length == 0 && StateselectedValue.length == 0 && CityselectedValue.length == 0 && IndustryselectedValue.length == 0 && KeywordselectedValue.length == 0 && PeopleCountselectedValue.length == 0 && ProductCountselectedValue.length == 0 && IngredientCountselectedValue.length == 0 && AssigntomeselectedValue.length == 0) {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).hide();
+
         } else {
             $(customElement.shadowRoot.querySelector("#clear_all_company")).show();
         }
-
-        let wildcardRegex = /(?:^|&)wildcard\[\]=([^&]+)/;
-
-        // Use match to find the wildcard parameter and its value
-        let wildcardMatch = filter_data.match(wildcardRegex);
-        console.log(wildcardMatch)
-        
-        // Extract the wildcard parameter and its value
-        filter_data = (wildcardMatch ? wildcardMatch[0] : '') + '&';
-        console.log(filter_data)
+        filter_data = '';
         if (name) {
-            filter_data = filter_data.replace(/company_name\[\]=.*&/, '');
             filter_data += getFilterfields('company_name', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
                 return $(this).val() != "";
             }).serialize();
         }
-        // filter_data = filter_data.replace(/company_location\[\]=.*&/, '');
         filter_data += getFilterfields('company_location', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        filter_data = filter_data.replace(/company_type\[\]=.*&/, '');
         filter_data += getFilterfields('company_type', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() !="";
         }).serialize();
-        filter_data = filter_data.replace(/state_company_data\[\]=.*&/, '');
         filter_data += getFilterfields('state_company_data', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        filter_data = filter_data.replace(/city_company_data\[\]=.*&/, '');
         filter_data += getFilterfields('city_company_data', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        filter_data = filter_data.replace(/industry\[\]=.*&/, '');
         filter_data += getFilterfields('industry', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        filter_data = filter_data.replace(/keywords\[\]=.*&/, '');
         filter_data += getFilterfields('keywords', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        filter_data = filter_data.replace(/people_count\[\]=.*&/, '');
         filter_data += getFilterfields('people_count', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        filter_data = filter_data.replace(/product_count\[\]=.*&/, '');
         filter_data += getFilterfields('product_count', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        filter_data = filter_data.replace(/ingredient_count\[\]=.*&/, '');
         filter_data += getFilterfields('ingredient_count', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
-        filter_data = filter_data.replace(/assigned_to_me\[\]=.*&/, '');
         filter_data += getFilterfields('assigned_to_me', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
             return $(this).val() != "";
         }).serialize();
         if(window.globalConfig.source == 'customer_linking'){
-            filter_data = filter_data.replace(/assigned_staff_select\[\]=.*&/, '');
             filter_data += getFilterfields('assigned_staff_select', 'class') + $(customElement.shadowRoot.querySelector("#companies-filter-form")).find("").filter(function () {
                 return $(this).val() != "";
             }).serialize();
@@ -708,9 +615,9 @@ setTimeout(() => {
             return $(this).val() != "";
         }).serialize();
         $(customElement.shadowRoot.querySelector('html, body')).scrollTop(0);
-        // $(customElement.shadowRoot.querySelector('#top_search')).val('');
+        $(customElement.shadowRoot.querySelector('#top_search')).val('');
         getCompanies();
-    }
+
     })
 
     $(customElement.shadowRoot.querySelectorAll('.people-filter')).on('change', function (e) {
@@ -773,7 +680,6 @@ function generatePagination(total_pages) {
             break;
         }
     }
-    
 
     if (total_pages >= 100) {
         var visible_pages = 100;
@@ -826,9 +732,6 @@ function generatePagination(total_pages) {
             
         }
     }
-
-
-
 }
 
 
@@ -904,26 +807,7 @@ function sanitizeCompanyName(companyName) {
 
 // For Linking Filter
 function linkFilter(fieldName,data,fieldId,collapseId) {
-    console.log(fieldId)
-    console.log(data)
-    if(fieldId == 'keyword_suggest_list'){
-        var selectElement = $(customElement.shadowRoot.querySelector('#'+fieldId));
-        console.log(data.split(','))
-        for(ele of data.split(',')){
-            var existingOption = $(selectElement).find('option[value="' + ele + '"]');
-            console.log(existingOption)
-            if (existingOption.length) {
-                existingOption.remove();
-            } else {
-                var option = new Option(ele, ele, true, true);
-                selectElement.append(option);
-            }
-        }
-        
-        selectElement.trigger('change');
-        $(customElement.shadowRoot.querySelector('#'+collapseId)).collapse('show');
-    } else{
-        var selectElement = $(customElement.shadowRoot.querySelector('#'+fieldId));
+    var selectElement = $(customElement.shadowRoot.querySelector('#'+fieldId));
     var existingOption = $(selectElement).find('option[value="' + data + '"]');
     console.log(existingOption)
     if (existingOption.length) {
@@ -934,15 +818,14 @@ function linkFilter(fieldName,data,fieldId,collapseId) {
     }
     selectElement.trigger('change');
     $(customElement.shadowRoot.querySelector('#'+collapseId)).collapse('show');
-    }
 }
 
 
 function getCompanies() {
-   console.log('getcompaniess')
+   console.log(filter_data);
     let total_entries;
     let element = customElement.shadowRoot.querySelector("#entries-select-1");
-    
+
     total_entries = $(element).val();
 
     // Default to 10 if no matching element is found
@@ -961,7 +844,7 @@ function getCompanies() {
     }else {
         var sort_order = sortOrder;
     }
- 
+
     $.ajax({
         type: "POST",
         url: window.envConfig.masterapi_url +  "/ajax_companies_listing",
@@ -1006,11 +889,6 @@ function getCompanies() {
                 var svgimg = '';
             }
 
-            let keywords_html = '';
-            for(keyword of data.organization.keywords){
-                keywords_html += '<a href="#" onclick="linkFilter(\'Keyword Type\', \''+keyword+'\', \'keyword_suggest_list\', \'collapse7\')">'+keyword+'</a>,'
-            }
-
             const org = data.organization;
             table += '<tr class="accordion-header collapsed  accordion-item" id="flush-headingOne' + key + '" >\n' +
               '<td>' + 
@@ -1053,18 +931,18 @@ function getCompanies() {
                 '                            <a data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.industry+'\', \'industry_suggest_list\', \'collapse5\')" title="' + data.organization.industry + '">' + (data.organization.industry == null ? "N/A" : data.organization.industry) + '</a>\n' +
                 '                        </td>\n' +
                 '                        <td>\n' +
-                '                            <span data-bs-toggle="tooltip" title="' + data.organization.merged_keywords + '">' + keywords_html + '</span>\n' +
+                '                            <span data-bs-toggle="tooltip" title="' + data.organization.merged_keywords + '">' + data.organization.merged_keywords + '</span>\n' +
                 '                        </td>\n' +
-                '                        <td class="location"><span data-bs-toggle="tooltip" onclick="linkFilter(\'City \', \''+data.organization.company_location+'\', \'company_city_suggest_list\', \'collapse4\')" title="' +data.organization.company_location+'">' +data.organization.company_location+'</span></td>\n' +
-                '                        <td class="company_type"><span data-bs-toggle="tooltip" onclick="linkFilter(\'Company Type\', \''+data.organization.company_type+'\', \'company_type_suggest_list\', \'collapse20\')" title="' +data.organization.company_type+'">' +data.organization.company_type+'</span></td>\n' +
+                '                        <td class="location"><span data-bs-toggle="tooltip" title="' +data.organization.company_location+'">' +data.organization.company_location+'</span></td>\n' +
+                '                        <td class="company_type"><span data-bs-toggle="tooltip" title="' +data.organization.company_type+'">' +data.organization.company_type+'</span></td>\n' +
                 '                        <td class="EmployeeSize">\n' +
-                '                            <span onclick="linkFilter(\'People Count \', \''+data.organization.people_count_printed+'\', \'people_count_suggest_list\', \'collapse9\')">' + data.organization.people_count_printed + '</span>\n' +
+                '                            <span>' + data.organization.people_count_printed + '</span>\n' +
                 '                        </td>\n' +
                 '                        <td class="IngredientCount">\n' +
-                '                        <span onclick="linkFilter(\'People Count \', \''+data.organization.ingredient_count_printed+'\', \'ingredient_count_suggest_list\', \'collapse26\')">' + data.organization.ingredient_count_printed + '</span> \n' +
+                '                        ' + data.organization.ingredient_count_printed + ' \n' +
                 '                        </td>\n' +
                 '                        <td class="productcount">\n' +
-                '                            <span onclick="linkFilter(\'Product Count \', \''+data.organization.product_count_printed+'\', \'product_count_suggest_list\', \'collapse10\')">' + data.organization.product_count_printed + '</span>\n' +
+                '                            <span>' + data.organization.product_count_printed + '</span>\n' +
                 '                        </td>\n' +
                 '                        <td class="companyRevenue">\n' +
                 '                            <div class="metric-value">$' + data.organization.annual_revenue_printed + '</div>\n' +
@@ -1130,8 +1008,6 @@ function getFilterfields(field, selector = '') {
         value = $(customElement.shadowRoot.querySelector("#" + field + '_suggest')).val();
     }
 
-    console.log(value)
-
     if (typeof value == 'string') {
         value = value.split(",");
     }
@@ -1192,8 +1068,6 @@ function saveDataPrimaryDomain() {
     // Save the data to localStorage
     localStorage.setItem('dataPrimaryDomain', JSON.stringify(dataPrimaryDomain));
     localStorage.setItem('dataOrganization', JSON.stringify(dataOrganization));
-    $(customElement.shadowRoot.querySelector("#companies_selected_count")).removeClass('d-none');
-    $(customElement.shadowRoot.querySelector("#totalSelectedCompanyCount")).html(dataPrimaryDomain.length);
 
    
     $(customElement.shadowRoot.querySelector('#selected_companies_total')).text(JSON.parse(localStorage.getItem('dataPrimaryDomain')).length);
@@ -1341,6 +1215,7 @@ function handleCheckboxChange() {
     
     saveDataPrimaryDomain();
     const checkboxes = customElement.shadowRoot.querySelectorAll('.company_checkbox');
+    
     // Check if every checkbox in the NodeList is checked
     var allChecked = Array.from(checkboxes).every(checkbox => checkbox.checked);
    
@@ -1448,7 +1323,7 @@ function addToLeadNew(selectedDomains){
     }).done(function (response) {
             let table = '';
             if (response.fetched_count == 0){
-                var nodatafound = '<tr><td colspan="8" class="text-center p-3">No results found</td></tr>';
+                var nodatafound = 'No results found';
             }
             $.each(response.items, function (key, data) {
             table += '<tr class="accordion-header collapsed  accordion-item"  id="flush-heading' + key + '" >\n' +
@@ -1542,7 +1417,7 @@ function addToLeadNew(selectedDomains){
             })
             $(customElement.shadowRoot.querySelector('#loader')).fadeOut();
         $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).html(table);
-        $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).html(nodatafound);
+        $(customElement.shadowRoot.querySelector('#review-prospects-data-table')).text(nodatafound);
         $(customElement.shadowRoot.querySelector('#totalCountReview')).removeClass('d-none');
         if(response.fetched_count !== response.total_count){
             $(customElement.shadowRoot.querySelector('#totalCountReview')).text(response.fetched_count.toLocaleString());
@@ -1670,7 +1545,7 @@ $(document).on('ajaxComplete', (event) => {
             $(customElement.shadowRoot.querySelector("#success-alert")).fadeIn();
             setTimeout(function () {
                 $(customElement.shadowRoot.querySelector("#success-alert")).fadeOut();
-		   //location.reload();
+                location.reload();
             }, 5000);
         })
     })
@@ -1966,7 +1841,7 @@ function getPeople(selectedDomains) {
             let table = '';
 
             if (response.fetched_count == 0){
-                var nodatafound = '<tr><td colspan="8" class="text-center p-3">No results found</td></tr>';
+                var nodatafound = 'No results found';
             }
            
             $.each(response.items, function (key, data) {
@@ -2000,7 +1875,7 @@ function getPeople(selectedDomains) {
             // If not in the array, add a new entry
             
        
-              table+='<input type="checkbox" class="form-check-input disable people_checkbox" '+getcheckBoxdata+' data-first-name="'+data.person.first_name+'" data-last-name="'+data.person.last_name+'" data-email="'+data.person.email+'" data-phone="'+data.person.organization.phone+'" data-company_name="'+data.person.organization.name+'" data-linkedin-url="'+data.person.linkedin_url+'" data-company_country="'+data.person.organization.country+'" data-city="'+data.person.city+'" data-state="'+data.person.state+'" data-phone-number="'+data.person.phone_numbers?.[0]+'" data-company_website="'+data.person.organization.website_url+'" data-contact_user_phonenumber="'+data.person.phone_numbers?.[0]+'" data-contact_user_country="'+data.person.country+'" data-primary_domain="'+data.person.organization.primary_domain+'"  name="client_checkbox[]" value="" '+chekedCheckbox+'>'+
+              table+='<input type="checkbox" class="form-check-input disable people_checkbox" '+getcheckBoxdata+' data-first-name="'+data.person.first_name+'" data-last-name="'+data.person.last_name+'" data-email="'+data.person.email+'" data-phone="'+data.person.organization.phone+'" data-company_name="'+data.person.organization.name+'" data-linkedin-url="'+data.person.linkedin_url+'" data-company_country="'+data.person.organization.country+'" data-city="'+data.person.city+'" data-state="'+data.person.state+'" data-phone-number="'+data.person.phone_numbers[0]+'" data-company_website="'+data.person.organization.website_url+'" data-contact_user_phonenumber="'+data.person.phone_numbers[0]+'" data-contact_user_country="'+data.person.country+'" data-primary_domain="'+data.person.organization.primary_domain+'"  name="client_checkbox[]" value="" '+chekedCheckbox+'>'+
               '</div></td>'+
                 '                        <td class="person-details d-flex align-items-center">\n' +
                 '                            <div class="profile-image">\n' +
@@ -2090,7 +1965,7 @@ function getPeople(selectedDomains) {
             })
             $(customElement.shadowRoot.querySelector('#loader')).fadeOut();
         $(customElement.shadowRoot.querySelector('#people-data-table')).html(table);
-        $(customElement.shadowRoot.querySelector('#people-data-table')).html(nodatafound);
+        $(customElement.shadowRoot.querySelector('#people-data-table')).text(nodatafound);
         $(customElement.shadowRoot.querySelector('#totalCountPeople')).removeClass('d-none');
         if(response.fetched_count == response.total_count){
             $(customElement.shadowRoot.querySelector('#totalCountPeople')).text(response.fetched_count.toLocaleString());
@@ -2125,6 +2000,7 @@ function getPeople(selectedDomains) {
             const checkAllCheckbox = customElement.shadowRoot.querySelector('#checkAllCompany');
             // checkAllCheckbox.addEventListener('change', handleCheckboxChange.bind(this));
             checkAllCheckbox.addEventListener('change', function () {
+                console.log(332423432)
                 // handleCheckboxChange.bind(this)
                 // Check or uncheck all company checkboxes based on the Check All checkbox state
                 $(customElement.shadowRoot.querySelectorAll('.company_checkbox')).prop('checked', $(this).prop('checked'));
@@ -2185,7 +2061,7 @@ function getPeople(selectedDomains) {
 
     });
 
-    async function assign_companies() {
+    function assign_companies() {
         console.log('assign companiessss')
         let dataOrganizationStrings = JSON.parse(localStorage.getItem('dataOrganization'));
         let dataOrganizations = [];
@@ -2206,122 +2082,124 @@ function getPeople(selectedDomains) {
         $(customElement.shadowRoot.querySelector("#assign_companies")).prop("disabled", true).html('Loading...');
         let statuses = []
         console.log(dataOrganizations)
-        for (const dataOrganization of dataOrganizations) {
-            console.log(dataOrganization);
-            console.log(dataOrganization.name);
-    
-            let settings = {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": window.envConfig.zyler_bearer_token
+        for (dataOrganization of dataOrganizations){
+            console.log(dataOrganization)
+            console.log(dataOrganization.name)
+            var settings = {
+                "url": window.envConfig.zyler_base_url+"/api/entity/user/add_new_clients",
+                "method": "POST",
+                "timeout": 0,
+                "headers": {
+                        "Content-Type": "application/json",
+                        "Authorization":  window.envConfig.zyler_bearer_token
                 },
-                body: JSON.stringify({
-                    "staff_id": 0,
-                    "source": "customer_linking",
-                    "company_name": dataOrganization.name,
-                    "company_website": dataOrganization.website_url,
-                    "company_email": null,
-                    "company_phone": dataOrganization.phone,
-                    "company_country": dataOrganization.country,
-                    "company_state": dataOrganization.state,
-                    "company_city": dataOrganization.city,
-                    "company_zip": dataOrganization.postal_code,
-                    "company_industry": [dataOrganization.industry]
-                })
+                "data": JSON.stringify({
+                        "staff_id": 0,
+                        "company_name": dataOrganization.name,
+                        "company_website": dataOrganization.website_url,
+                        "company_email": null,
+                        "company_phone": dataOrganization.phone,
+                        "company_country": dataOrganization.country,
+                        "company_state": dataOrganization?.state,
+                        "company_city": dataOrganization.city,
+                        "company_zip": dataOrganization.postal_code,
+                        "company_industry": [dataOrganization.industry]
+                }) 
             };
-    
-            try {
-                const response = await fetch(window.envConfig.zyler_base_url + "/api/entity/user/add_new_clients", settings);
-                const data = await response.json();
-                console.log(data);
-    
-                if (data.status === "Added") {
-                    const approval_field_name = window.envConfig.zyler_tenant + "_approval";
-                    settings = {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "x-api-key": window.envConfig.api_key
+            $.ajax(settings).done(function (response) {
+                console.log(response)
+                if(response.status == "Added"){
+                    approval_field_name = window.envConfig.zyler_tenant + "_approval"
+                    var settings = {
+                        "url": window.envConfig.sales_automation_api_url+"/assign_unassign_staff_from_company",
+                        "method": "POST",
+                        "timeout": 0,
+                        "headers": {
+                                "Content-Type": "application/json",
+                                "x-api-key":  window.envConfig.api_key
                         },
-                        body: JSON.stringify({
+                        "data": JSON.stringify({
                             "primary_domain": dataOrganization.primary_domain,
                             [approval_field_name]: "approved"
-                        })
+                        }) 
                     };
-    
-                    const assignResponse = await fetch(window.envConfig.sales_automation_api_url + "/assign_unassign_staff_from_company/fresh", settings);
-                    const assignData = await assignResponse.json();
-                    console.log(assignData);
-                } else {
-                    console.log('window.envConfig.zyler_tenant' + window.envConfig.zyler_tenant);
-                    const approval_field_name = window.envConfig.zyler_tenant + "_approval";
-                    settings = {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "x-api-key": window.envConfig.api_key
-                        },
-                        body: JSON.stringify({
-                            "primary_domain": dataOrganization.primary_domain,
-                            [approval_field_name]: 'approved'
-                        })
-                    };
-    
-                    console.log('settings', settings);
-                    const reassignResponse = await fetch(window.envConfig.sales_automation_api_url + "/assign_unassign_staff_from_company/reassign", settings);
-                    const reassignData = await reassignResponse.json();
-                    console.log('response', reassignData);
+                    $.ajax(settings).done(function (response) {
+                        console.log(response)
+                    });
                 }
-                
-                const staffSelect = customElement.shadowRoot.querySelector('#staff_select');
-                const staff_id = staffSelect ? staffSelect.value : null;
 
-                if (staff_id) {
-                    const assignCompanyToStaffResponse = await fetch(window.envConfig.zyler_base_url + "/api/entity/user/assign_company_to_staff", {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "Authorization": window.envConfig.zyler_bearer_token
+                let staff_id = $(customElement.shadowRoot.querySelector('#staff_select')).val()
+
+                if(staff_id){
+                    var assign_company_to_staff_settings = {
+                        "url": window.envConfig.zyler_base_url+"/api/entity/user/assign_company_to_staff",
+                        "method": "POST",
+                        "timeout": 0,
+                        "headers": {
+                                "Content-Type": "application/json",
+                                "Authorization":  window.envConfig.zyler_bearer_token
                         },
-                        body: JSON.stringify({
-                            staff_id: staff_id,
-                            primary_domain: dataOrganization.primary_domain,
-                            source: "customer_linking"
+                        "data": JSON.stringify({
+                            "staff_id": staff_id,
+                            "primary_domain": dataOrganization.primary_domain
                         })
+                    };
+                    $.ajax(assign_company_to_staff_settings).done(function (response) {
+                        console.log(response)
+                        if(response.status == 'Added'){
+                            tenant_staffids_field_name = window.envConfig.zyler_tenant + "_staff_ids"
+                            tenant_status_field_name = window.envConfig.zyler_tenant + "_status"
+                            var settings = {
+                                "url": window.envConfig.sales_automation_api_url+"/assign_unassign_staff_from_company/fresh",
+                                "method": "POST",
+                                "timeout": 0,
+                                "headers": {
+                                        "Content-Type": "application/json",
+                                        "x-api-key":  window.envConfig.api_key
+                                },
+                                "data": JSON.stringify({
+                                    "primary_domain": dataOrganization.primary_domain,
+                                    [tenant_staffids_field_name]: [parseInt(staff_id)],
+                                    [tenant_status_field_name]: 'assigned'
+                                }) 
+                            };
+                            console.log('settings', settings)
+                            $.ajax(settings).done(function (response) {
+                                console.log('response',response)
+                            });
+                        } else{
+                            tenant_staffids_field_name = window.envConfig.zyler_tenant + "_staff_ids"
+                            tenant_status_field_name = window.envConfig.zyler_tenant + "_status"
+                            var settings = {
+                                "url": window.envConfig.sales_automation_api_url+"/assign_unassign_staff_from_company/reassign",
+                                "method": "POST",
+                                "timeout": 0,
+                                "headers": {
+                                        "Content-Type": "application/json",
+                                        "x-api-key":  window.envConfig.api_key
+                                },
+                                "data": JSON.stringify({
+                                    "primary_domain": dataOrganization.primary_domain,
+                                    [tenant_staffids_field_name]: [parseInt(staff_id)],
+                                    [tenant_status_field_name]: 'assigned'
+                                }) 
+                            };
+                            console.log('settings', settings)
+                            $.ajax(settings).done(function (response) {
+                                console.log('response',response)
+                            });
+                        }
                     });
-                
-                    const assignCompanyData = await assignCompanyToStaffResponse.json();
-                
-                    const action = assignCompanyData.status === 'Added' ? 'fresh' : 'reassign';
-                    const tenant_staffids_field_name = window.envConfig.zyler_tenant + "_staff_ids";
-                    const tenant_status_field_name = window.envConfig.zyler_tenant + "_status";
-                
-                    const updateStaffAssignmentResponse = await fetch(window.envConfig.sales_automation_api_url + `/assign_unassign_staff_from_company/${action}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "x-api-key": window.envConfig.api_key
-                        },
-                        body: JSON.stringify({
-                            primary_domain: dataOrganization.primary_domain,
-                            [tenant_staffids_field_name]: [parseInt(staff_id)],
-                            [tenant_status_field_name]: 'assigned'
-                        })
-                    });
-                
-                    const updateData = await updateStaffAssignmentResponse.json();
-                    console.log('response', updateData);
                 }
-            } catch (error) {
-                console.error('Error handling organization:', dataOrganization.name, error);
-            }
+
+                console.log(response)
+            });
         }
         $(customElement.shadowRoot.querySelector("#success-alert")).html('<strong>Prospect Assigned Successfully</strong> ');
         $(customElement.shadowRoot.querySelector("#success-alert")).fadeIn();
         setTimeout(function () {
            $(customElement.shadowRoot.querySelector("#success-alert")).fadeOut();
-		 location.reload()
+            location.reload()
         }, 3000);
     }
 // let count =0  ;
@@ -2361,4 +2239,4 @@ function getPeople(selectedDomains) {
     
     //     selectElement.select2('close');
     // });
-
+    
